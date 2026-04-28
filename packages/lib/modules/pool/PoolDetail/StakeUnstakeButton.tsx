@@ -9,13 +9,14 @@ import {
   VStack,
   HStack,
   Text,
+  Tooltip,
   useDisclosure,
 } from '@chakra-ui/react'
 import { usePathname, useRouter } from 'next/navigation'
 import { ReactNode } from 'react'
 import { bn, fNum } from '@repo/lib/shared/utils/numbers'
 import { ChevronUp } from 'react-feather'
-import { getCanStake } from '../actions/stake.helpers'
+import { getCanStake, hasStakingIncentives } from '../actions/stake.helpers'
 import {
   getUserWalletBalance,
   calcGaugeStakedBalance,
@@ -98,6 +99,7 @@ export function StakeUnstakeButton({ pool, action }: StakeUnstakeButtonProps) {
   const canStake = getCanStake(pool)
   const hasUnstakedBalance = bn(getUserWalletBalance(pool)).gt(0)
   const [, balancerMaxApr] = getTotalApr(pool.dynamicData.aprItems)
+  const poolHasStakingIncentives = hasStakingIncentives(pool)
 
   const hasGaugeStakedBalance = bn(calcGaugeStakedBalance(pool)).gt(0)
   const hasAuraStakedBalance = bn(calcAuraStakedBalance(pool)).gt(0)
@@ -113,30 +115,38 @@ export function StakeUnstakeButton({ pool, action }: StakeUnstakeButtonProps) {
 
   const isStakeAction = action === 'stake'
   const hasBalanceForAction = isStakeAction ? hasUnstakedBalance : hasAnyStakedBalance
-  const isDisabled = isStakeAction ? !(canStake && hasUnstakedBalance) : !hasAnyStakedBalance
+  const isDisabled = isStakeAction
+    ? !(canStake && hasUnstakedBalance) || !poolHasStakingIncentives
+    : !hasAnyStakedBalance
 
   const buttonVariant = isStakeAction
-    ? canStake && hasUnstakedBalance
+    ? canStake && hasUnstakedBalance && poolHasStakingIncentives
       ? 'secondary'
       : 'disabled'
     : hasAnyStakedBalance
       ? 'tertiary'
       : 'disabled'
 
-  if (
-    hidePopover ||
-    (isStakeAction ? !pool.staking?.aura : hasGaugeStakedBalance && !hasAuraStakedBalance)
-  ) {
+  const showOnlyGaugeForUnstake = !isStakeAction && hasGaugeStakedBalance && !hasAuraStakedBalance
+
+  const noIncentivesTooltip = isStakeAction && !poolHasStakingIncentives
+
+  if (hidePopover || isStakeAction || showOnlyGaugeForUnstake) {
     return (
-      <Button
-        flex="1"
-        isDisabled={isDisabled}
-        maxW="120px"
-        onClick={isStakeAction ? stakeOnProtocol : unstakeFromProtocol}
-        variant={buttonVariant}
+      <Tooltip
+        isDisabled={!noIncentivesTooltip}
+        label="Staking is disabled because there are no staking incentives for this pool"
       >
-        {isStakeAction ? 'Stake' : 'Unstake'}
-      </Button>
+        <Button
+          flex="1"
+          isDisabled={isDisabled}
+          maxW="120px"
+          onClick={isStakeAction ? stakeOnProtocol : unstakeFromProtocol}
+          variant={buttonVariant}
+        >
+          {isStakeAction ? 'Stake' : 'Unstake'}
+        </Button>
+      </Tooltip>
     )
   }
 
