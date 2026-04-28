@@ -4,6 +4,7 @@ import { Address } from 'viem'
 import { HumanAmount } from '@balancer/sdk'
 import { isClaimableGauge } from '../pool.helpers'
 import {
+  GqlPoolAprItemType,
   GqlPoolStakingType,
   GqlUserStakedBalance,
 } from '@repo/lib/shared/services/api/generated/graphql'
@@ -48,6 +49,12 @@ export function hasNonPreferentialStakedBalance(pool: Pool): boolean {
 
 export function getCanStake(pool: Pool): boolean {
   return !!pool.staking && !hasNonPreferentialStakedBalance(pool)
+}
+
+export function hasStakingIncentives(pool: Pool): boolean {
+  return pool.dynamicData.aprItems.some(
+    item => item.type === GqlPoolAprItemType.Staking && bn(item.apr).gt(0)
+  )
 }
 
 export function findFirstNonPreferentialStakedWithBalance(
