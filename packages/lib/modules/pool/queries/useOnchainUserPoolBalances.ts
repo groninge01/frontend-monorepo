@@ -8,6 +8,7 @@ import { bn, safeSum } from '@repo/lib/shared/utils/numbers'
 import { captureNonFatalError } from '@repo/lib/shared/utils/query-errors'
 import { HumanAmount } from '@balancer/sdk'
 import type BigNumber from 'bignumber.js'
+import { Address } from 'viem'
 import { useEffect, useMemo, useCallback } from 'react'
 import { ReadContractsErrorType } from 'wagmi/actions'
 import { Pool as OriginalPool } from '../pool.types'
@@ -20,7 +21,15 @@ type Pool = OriginalPool & {
   nonGaugeStakedBalance?: BigNumber
 }
 
-export function useOnchainUserPoolBalances(pools: Pool[] = []) {
+type UseOnchainUserPoolBalancesOptions = {
+  enabled?: boolean
+  userAddress?: Address
+}
+
+export function useOnchainUserPoolBalances(
+  pools: Pool[] = [],
+  options: UseOnchainUserPoolBalancesOptions = {}
+) {
   const { priceFor } = useTokens()
 
   const {
@@ -29,7 +38,7 @@ export function useOnchainUserPoolBalances(pools: Pool[] = []) {
     isFetching: isFetchingUnstakedPoolBalances,
     refetch: refetchUnstakedBalances,
     error: unstakedPoolBalancesError,
-  } = useUserUnstakedBalance(pools)
+  } = useUserUnstakedBalance(pools, options)
 
   const {
     stakedBalancesByPoolId,
@@ -37,7 +46,7 @@ export function useOnchainUserPoolBalances(pools: Pool[] = []) {
     isFetching: isFetchingStakedPoolBalances,
     refetch: refetchedStakedBalances,
     error: stakedPoolBalancesError,
-  } = useUserStakedBalance(pools)
+  } = useUserStakedBalance(pools, options)
 
   const isLoading = isLoadingUnstakedPoolBalances || isLoadingStakedPoolBalances
   const isFetching = isFetchingUnstakedPoolBalances || isFetchingStakedPoolBalances

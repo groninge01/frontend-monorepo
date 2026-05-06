@@ -3,18 +3,28 @@ import { bn } from '@repo/lib/shared/utils/numbers'
 import { compact, keyBy } from 'lodash'
 import { Address, formatUnits, parseAbi } from 'viem'
 import { useReadContracts } from 'wagmi'
-import { useUserAccount } from '../../web3/UserAccountProvider'
+import { UserAccountContext } from '../../web3/UserAccountProvider'
 import { Pool } from '../pool.types'
 import { BPT_DECIMALS } from '../pool.constants'
-import { useMemo } from 'react'
+import { useContext, useMemo } from 'react'
 import { useTokens } from '../../tokens/TokensProvider'
 
 export type UnstakedBalanceByPoolId = ReturnType<
   typeof useUserUnstakedBalance
 >['unstakedBalanceByPoolId']
 
-export function useUserUnstakedBalance(pools: Pool[] = []) {
-  const { userAddress, isConnected } = useUserAccount()
+type UseUserUnstakedBalanceOptions = {
+  enabled?: boolean
+  userAddress?: Address
+}
+
+export function useUserUnstakedBalance(
+  pools: Pool[] = [],
+  options: UseUserUnstakedBalanceOptions = {}
+) {
+  const userAccount = useContext(UserAccountContext)
+  const userAddress = options.userAddress || userAccount?.userAddress
+  const isEnabled = options.enabled ?? userAccount?.isConnected ?? false
   const { priceFor } = useTokens()
 
   // All pool version will implement balanceOf the same ABI function is shared
@@ -29,7 +39,7 @@ export function useUserUnstakedBalance(pools: Pool[] = []) {
   } = useReadContracts({
     allowFailure: false,
     query: {
-      enabled: isConnected,
+      enabled: !!userAddress && isEnabled,
     },
     contracts: pools.map(
       pool =>
@@ -63,7 +73,7 @@ export function useUserUnstakedBalance(pools: Pool[] = []) {
         }
       })
     )
-  }, [isLoading, unstakedPoolBalances, pools, userAddress, isFetching])
+  }, [isLoading, unstakedPoolBalances, pools, userAddress, isFetching, priceFor])
 
   const unstakedBalanceByPoolId = keyBy(balances, 'poolId')
 

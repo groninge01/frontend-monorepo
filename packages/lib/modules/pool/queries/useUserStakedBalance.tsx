@@ -7,22 +7,32 @@ import { bn } from '@repo/lib/shared/utils/numbers'
 import { compact, groupBy } from 'lodash'
 import { Address, formatUnits } from 'viem'
 import { useReadContracts } from 'wagmi'
-import { useUserAccount } from '../../web3/UserAccountProvider'
+import { UserAccountContext } from '../../web3/UserAccountProvider'
 import { balancerV2GaugeV5Abi } from '../../web3/contracts/abi/generated'
 import { Pool } from '../pool.types'
 import { BPT_DECIMALS } from '../pool.constants'
-import { useMemo } from 'react'
+import { useContext, useMemo } from 'react'
 import { useTokens } from '../../tokens/TokensProvider'
 
 export type StakedBalancesByPoolId = ReturnType<
   typeof useUserStakedBalance
 >['stakedBalancesByPoolId']
 
-export function useUserStakedBalance(pools: Pool[] = []) {
-  const { userAddress, isConnected } = useUserAccount()
+type UseUserStakedBalanceOptions = {
+  enabled?: boolean
+  userAddress?: Address
+}
+
+export function useUserStakedBalance(
+  pools: Pool[] = [],
+  options: UseUserStakedBalanceOptions = {}
+) {
+  const userAccount = useContext(UserAccountContext)
+  const userAddress = options.userAddress || userAccount?.userAddress
+  const isEnabled = options.enabled ?? userAccount?.isConnected ?? false
   const { priceFor } = useTokens()
   const poolByStaking = createPoolByStakingRecord(pools)
-  const contracts = poolContracts(poolByStaking, userAddress)
+  const contracts = userAddress ? poolContracts(poolByStaking, userAddress) : []
 
   const {
     data: stakedPoolBalances = [],
@@ -31,7 +41,7 @@ export function useUserStakedBalance(pools: Pool[] = []) {
     refetch,
     error,
   } = useReadContracts({
-    query: { enabled: isConnected },
+    query: { enabled: !!userAddress && isEnabled },
     allowFailure: false,
     contracts,
   })
@@ -69,7 +79,7 @@ export function useUserStakedBalance(pools: Pool[] = []) {
         }
       })
     )
-  }, [stakedPoolBalances, contracts, poolByStaking, userAddress, isFetching])
+  }, [stakedPoolBalances, contracts, poolByStaking, userAddress, isFetching, priceFor])
 
   const stakedBalancesByPoolId = groupBy(stakedBalances, 'poolId')
 
