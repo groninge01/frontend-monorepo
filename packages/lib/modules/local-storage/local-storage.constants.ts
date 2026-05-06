@@ -28,4 +28,9 @@ export const LS_KEYS = {
     ReClammConfig: 'poolCreation.reClammConfig',
     EclpConfig: 'poolCreation.eclpConfig',
   },
+  MobilePwa: {
+    Watchlist: 'mobilePwa.watchlist',
+    ActiveAccount: 'mobilePwa.activeAccount',
+    CachedDashboard: 'mobilePwa.cachedDashboard',
+  },
 }
