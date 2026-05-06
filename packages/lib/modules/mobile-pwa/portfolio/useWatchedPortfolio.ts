@@ -3,7 +3,6 @@
 import { useQuery } from '@apollo/client/react'
 import { Address } from 'viem'
 import { PROJECT_CONFIG } from '../../../config/getProjectConfig'
-import { useOnchainUserPoolBalances } from '../../pool/queries/useOnchainUserPoolBalances'
 import { Pool } from '../../pool/pool.types'
 import { GetPoolsDocument } from '../../../shared/services/api/generated/graphql'
 import {
@@ -33,13 +32,7 @@ export function useWatchedPortfolio({ address }: UseWatchedPortfolioInput) {
   })
 
   const poolsData = (data?.pools || []) as unknown as Pool[]
-  const { data: poolsWithOnchainUserBalances, isLoading: isLoadingOnchainBalances } =
-    useOnchainUserPoolBalances(poolsData, {
-      enabled: isEnabled,
-      userAddress: address || undefined,
-    })
-
-  const positions = mapMobilePortfolioPositions(poolsWithOnchainUserBalances)
+  const positions = mapMobilePortfolioPositions(poolsData)
   const portfolio: MobilePortfolioViewModel | undefined = address
     ? {
         account: address,
@@ -56,13 +49,6 @@ export function useWatchedPortfolio({ address }: UseWatchedPortfolioInput) {
     error,
     isStale: false,
     refetch,
-    status:
-      loading || isLoadingOnchainBalances
-        ? 'loading'
-        : error
-          ? 'error'
-          : portfolio
-            ? 'success'
-            : 'idle',
+    status: loading ? 'loading' : error ? 'error' : portfolio ? 'success' : 'idle',
   } as const
 }
