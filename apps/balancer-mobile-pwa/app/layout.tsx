@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { PropsWithChildren } from 'react'
+import { MobilePwaProviders } from '@repo/lib/modules/mobile-pwa/providers/MobilePwaProviders'
 import '@mobile/app/globals.css'
 
 export const metadata: Metadata = {
@@ -16,10 +17,12 @@ export const viewport: Viewport = {
   themeColor: '#12161f',
 }
 
-export default function RootLayout({ children }: PropsWithChildren) {
+export default async function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <MobilePwaProviders>{children}</MobilePwaProviders>
+      </body>
     </html>
   )
 }
