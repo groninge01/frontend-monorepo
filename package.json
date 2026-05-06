@@ -3,9 +3,11 @@
   "private": true,
   "scripts": {
     "build": "turbo build",
+    "build:bal-mobile": "turbo build --filter balancer-mobile-pwa",
     "start": "turbo start",
     "dev": "pnpm run dev:bal",
     "dev:bal": "turbo dev --filter frontend-v3",
+    "dev:bal-mobile": "turbo dev --filter balancer-mobile-pwa",
     "dev:bal:fork": "NEXT_PUBLIC_E2E_DEV=1 pnpm dev:bal",
     "dev:beets": "turbo dev --filter beets-frontend-v3",
     "dev:beets:fork": "NEXT_PUBLIC_E2E_DEV=1 pnpm dev:beets",
