@@ -4,7 +4,7 @@ import { AddressEntry } from '../account/AddressEntry'
 import { PortfolioSummaryPreview } from '../dashboard/PortfolioSummaryPreview'
 import { MobileShell } from '../layout/MobileShell'
 import { MobileTabBar } from '../navigation/MobileTabBar'
-import { StatusChip } from '../ui/status-chip'
+import { PwaStatusChip } from '../pwa/PwaStatusChip'
 import { useWatchlist } from '../watchlist/useWatchlist'
 
 export function MobileHome() {
@@ -13,7 +13,7 @@ export function MobileHome() {
   return (
     <MobileShell
       bottomNavigation={<MobileTabBar activeTab="dashboard" />}
-      statusSlot={<StatusChip tone="neutral">Watch mode</StatusChip>}
+      statusSlot={<PwaStatusChip />}
     >
       <section className="space-y-5">
         <div className="space-y-2 pt-2">

@@ -1,7 +1,10 @@
 'use client'
 
+import { useEffect, useMemo } from 'react'
 import { abbreviateAddress } from '../../../shared/utils/addresses'
 import { useWatchedPortfolio } from '../portfolio/useWatchedPortfolio'
+import { readCachedDashboard, writeCachedDashboard } from '../pwa/dashboard-cache'
+import { useOnlineStatus } from '../pwa/useOnlineStatus'
 import { Card } from '../ui/card'
 import { StatusChip } from '../ui/status-chip'
 import { WatchedAccount } from '../watchlist/watchlist.types'
@@ -11,9 +14,17 @@ type PortfolioSummaryPreviewProps = {
 }
 
 export function PortfolioSummaryPreview({ account }: PortfolioSummaryPreviewProps) {
+  const isOnline = useOnlineStatus()
   const portfolio = useWatchedPortfolio({ address: account.address })
-  const totalValue = portfolio.data?.totalValue || 0
-  const positionsCount = portfolio.data?.positions.length || 0
+  const cachedDashboard = useMemo(() => readCachedDashboard(), [])
+  const dashboard = portfolio.data || (!isOnline ? cachedDashboard : undefined)
+  const totalValue = dashboard?.totalValue || 0
+  const positionsCount = dashboard?.positions.length || 0
+  const isUsingStaleData = !portfolio.data && !isOnline && !!cachedDashboard
+
+  useEffect(() => {
+    if (portfolio.data) writeCachedDashboard(portfolio.data, Date.now())
+  }, [portfolio.data])
 
   return (
     <Card className="space-y-4 p-4">
@@ -24,8 +35,8 @@ export function PortfolioSummaryPreview({ account }: PortfolioSummaryPreviewProp
             {abbreviateAddress(account.address)}
           </p>
         </div>
-        <StatusChip tone={portfolio.status === 'error' ? 'danger' : 'warning'}>
-          {portfolio.status === 'loading' ? 'Loading' : 'Read-only'}
+        <StatusChip tone={portfolio.status === 'error' && !isUsingStaleData ? 'danger' : 'warning'}>
+          {isUsingStaleData ? 'Stale' : portfolio.status === 'loading' ? 'Loading' : 'Read-only'}
         </StatusChip>
       </div>
 
@@ -44,7 +55,12 @@ export function PortfolioSummaryPreview({ account }: PortfolioSummaryPreviewProp
           <p className="mt-1 font-semibold text-white">{positionsCount} pools</p>
         </div>
       </div>
-      {portfolio.status === 'error' ? (
+      {isUsingStaleData ? (
+        <p className="text-sm text-orange-100">
+          Offline. Showing the last cached dashboard snapshot.
+        </p>
+      ) : null}
+      {portfolio.status === 'error' && !isUsingStaleData ? (
         <p className="text-sm text-red-200">Portfolio data could not be loaded. Try again later.</p>
       ) : null}
     </Card>

@@ -3,6 +3,8 @@
 import { abbreviateAddress } from '../../../shared/utils/addresses'
 import { MobileShell } from '../layout/MobileShell'
 import { MobileTabBar } from '../navigation/MobileTabBar'
+import { useInstallPrompt } from '../pwa/useInstallPrompt'
+import { useOnlineStatus } from '../pwa/useOnlineStatus'
 import { Button } from '../ui/button'
 import { Card } from '../ui/card'
 import { StatusChip } from '../ui/status-chip'
@@ -10,6 +12,8 @@ import { useWatchlist } from '../watchlist/useWatchlist'
 
 export function MobileSettings() {
   const { accounts, activeAccount, removeAccount, selectAccount } = useWatchlist()
+  const isOnline = useOnlineStatus()
+  const installPrompt = useInstallPrompt()
 
   return (
     <MobileShell
@@ -81,8 +85,18 @@ export function MobileSettings() {
         <Card className="space-y-2 p-4">
           <h2 className="text-sm font-semibold text-white">PWA status</h2>
           <p className="text-sm text-slate-400">
-            Install prompts and offline state will surface here when browser support is available.
+            {isOnline
+              ? 'Online and ready for live portfolio data.'
+              : 'Offline. Cached dashboard data may be shown.'}
           </p>
+          <Button
+            disabled={!installPrompt.canPrompt}
+            onClick={installPrompt.promptInstall}
+            type="button"
+            variant="secondary"
+          >
+            {installPrompt.canPrompt ? 'Install app' : 'Install unavailable'}
+          </Button>
         </Card>
       </section>
     </MobileShell>
