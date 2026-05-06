@@ -1,12 +1,26 @@
 'use client'
 
+import { Plus } from 'lucide-react'
+import { useState } from 'react'
 import { abbreviateAddress } from '../../../shared/utils/addresses'
+import { AddressEntry } from '../account/AddressEntry'
+import { QrAddressScanner } from '../account/QrAddressScanner'
 import { MobileShell } from '../layout/MobileShell'
 import { MobileTabBar } from '../navigation/MobileTabBar'
 import { useInstallPrompt } from '../pwa/useInstallPrompt'
 import { useOnlineStatus } from '../pwa/useOnlineStatus'
 import { Button } from '../ui/button'
 import { Card } from '../ui/card'
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHandle,
+  SheetOverlay,
+  SheetPortal,
+  SheetTitle,
+  SheetTrigger,
+} from '../ui/sheet'
 import { StatusChip } from '../ui/status-chip'
 import { useWatchlist } from '../watchlist/useWatchlist'
 
@@ -14,6 +28,7 @@ export function MobileSettings() {
   const { accounts, activeAccount, removeAccount, selectAccount } = useWatchlist()
   const isOnline = useOnlineStatus()
   const installPrompt = useInstallPrompt()
+  const [isAddSheetOpen, setIsAddSheetOpen] = useState(false)
 
   return (
     <MobileShell
@@ -73,12 +88,28 @@ export function MobileSettings() {
             </p>
           )}
           <div className="grid grid-cols-2 gap-2">
-            <Button type="button" variant="secondary">
-              Add
-            </Button>
-            <Button type="button" variant="secondary">
-              Scan
-            </Button>
+            <Sheet onOpenChange={setIsAddSheetOpen} open={isAddSheetOpen}>
+              <SheetTrigger asChild>
+                <Button type="button" variant="secondary">
+                  <Plus aria-hidden className="h-4 w-4" />
+                  Add
+                </Button>
+              </SheetTrigger>
+              <SheetPortal>
+                <SheetOverlay />
+                <SheetContent className="space-y-4">
+                  <SheetHandle />
+                  <div className="space-y-1">
+                    <SheetTitle className="text-base font-semibold">Add address</SheetTitle>
+                    <SheetDescription className="text-sm leading-6 text-slate-400">
+                      Save another address and make it active on this device.
+                    </SheetDescription>
+                  </div>
+                  <AddressEntry onAccountAdded={() => setIsAddSheetOpen(false)} />
+                </SheetContent>
+              </SheetPortal>
+            </Sheet>
+            <QrAddressScanner />
           </div>
         </Card>
 

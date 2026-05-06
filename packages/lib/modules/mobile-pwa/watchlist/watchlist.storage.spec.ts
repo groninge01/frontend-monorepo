@@ -4,6 +4,7 @@ import { LS_KEYS } from '../../local-storage/local-storage.constants'
 import {
   addWatchedAccount,
   getActiveWatchedAccount,
+  getServerWatchedAccountsSnapshot,
   getWatchedAccounts,
   removeWatchedAccount,
   setActiveWatchedAccount,
@@ -75,5 +76,12 @@ describe('watchlist storage', () => {
 
     expect(getWatchedAccounts()).toEqual([])
     expect(localStorage.getItem(LS_KEYS.MobilePwa.Watchlist)).toBeNull()
+  })
+
+  test('returns stable snapshots for React external store reads', () => {
+    addWatchedAccount({ address })
+
+    expect(getWatchedAccounts()).toBe(getWatchedAccounts())
+    expect(getServerWatchedAccountsSnapshot()).toBe(getServerWatchedAccountsSnapshot())
   })
 })

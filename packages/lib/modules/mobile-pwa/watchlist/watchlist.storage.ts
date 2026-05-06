@@ -9,17 +9,36 @@ type AddWatchedAccountInput = {
   label?: string
 }
 
+const emptyWatchlist: WatchedAccount[] = []
+let cachedRawWatchlist: string | null | undefined
+let cachedWatchlist = emptyWatchlist
+
 export function getWatchedAccounts(): WatchedAccount[] {
+  if (!hasLocalStorage()) return emptyWatchlist
+
   const rawWatchlist = localStorage.getItem(LS_KEYS.MobilePwa.Watchlist)
-  if (!rawWatchlist) return []
+  if (!rawWatchlist) {
+    cachedRawWatchlist = null
+    cachedWatchlist = emptyWatchlist
+    return cachedWatchlist
+  }
+  if (rawWatchlist === cachedRawWatchlist) return cachedWatchlist
 
   try {
     const parsed = JSON.parse(rawWatchlist)
-    return Array.isArray(parsed) ? parsed : []
+    cachedRawWatchlist = rawWatchlist
+    cachedWatchlist = Array.isArray(parsed) ? parsed : emptyWatchlist
+    return cachedWatchlist
   } catch {
     localStorage.removeItem(LS_KEYS.MobilePwa.Watchlist)
-    return []
+    cachedRawWatchlist = null
+    cachedWatchlist = emptyWatchlist
+    return cachedWatchlist
   }
+}
+
+export function getServerWatchedAccountsSnapshot(): WatchedAccount[] {
+  return emptyWatchlist
 }
 
 export function addWatchedAccount(input: AddWatchedAccountInput): WatchedAccount {
@@ -91,21 +110,35 @@ export function setActiveWatchedAccount(address: Address): WatchedAccount | unde
   return selectedAccount
 }
 
-export function getActiveWatchedAccount(): WatchedAccount | undefined {
+export function getActiveWatchedAccount(
+  accounts = getWatchedAccounts()
+): WatchedAccount | undefined {
   const activeAddress = getActiveAccountAddress()
   if (!activeAddress) return undefined
 
-  return getWatchedAccounts().find(account => isSameAddress(account.address, activeAddress))
+  return accounts.find(account => isSameAddress(account.address, activeAddress))
 }
 
 function setWatchedAccounts(accounts: WatchedAccount[]): void {
+  if (!hasLocalStorage()) return
+
+  cachedWatchlist = accounts
+  cachedRawWatchlist = JSON.stringify(accounts)
   localStorage.setItem(LS_KEYS.MobilePwa.Watchlist, JSON.stringify(accounts))
 }
 
 function setActiveAccountAddress(address: Address): void {
+  if (!hasLocalStorage()) return
+
   localStorage.setItem(LS_KEYS.MobilePwa.ActiveAccount, address)
 }
 
 function getActiveAccountAddress(): Address | undefined {
+  if (!hasLocalStorage()) return undefined
+
   return (localStorage.getItem(LS_KEYS.MobilePwa.ActiveAccount) || undefined) as Address | undefined
+}
+
+function hasLocalStorage(): boolean {
+  return typeof localStorage !== 'undefined'
 }

@@ -6,8 +6,13 @@ import { Card } from '../ui/card'
 import { Input } from '../ui/input'
 import { parseWatchAccountInput } from '../watchlist/address-input'
 import { useWatchlist } from '../watchlist/useWatchlist'
+import { QrAddressScanner } from './QrAddressScanner'
 
-export function AddressEntry() {
+type AddressEntryProps = {
+  onAccountAdded?: () => void
+}
+
+export function AddressEntry({ onAccountAdded }: AddressEntryProps) {
   const { addAccount } = useWatchlist()
   const [input, setInput] = useState('')
   const [error, setError] = useState<string | undefined>()
@@ -31,6 +36,7 @@ export function AddressEntry() {
     addAccount({ address: result.address })
     setInput('')
     setError(undefined)
+    onAccountAdded?.()
   }
 
   async function pasteFromClipboard() {
@@ -54,13 +60,14 @@ export function AddressEntry() {
           value={input}
         />
         {error ? <p className="text-sm text-red-200">{error}</p> : null}
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-3 gap-2">
           <Button type="submit" variant="primary">
             Continue
           </Button>
           <Button onClick={pasteFromClipboard} type="button" variant="secondary">
             Paste
           </Button>
+          <QrAddressScanner onAccountAdded={onAccountAdded} />
         </div>
       </form>
     </Card>

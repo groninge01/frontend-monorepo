@@ -5,6 +5,7 @@ import { Address } from 'viem'
 import { useMandatoryContext } from '../../../shared/utils/contexts'
 import {
   addWatchedAccount,
+  getServerWatchedAccountsSnapshot,
   getActiveWatchedAccount,
   getWatchedAccounts,
   removeWatchedAccount,
@@ -30,8 +31,15 @@ const WatchlistContext = createContext<WatchlistContextValue | null>(null)
 const watchlistChangeEvent = 'mobile-pwa-watchlist-change'
 
 export function WatchlistProvider({ children }: PropsWithChildren) {
-  const accounts = useSyncExternalStore(subscribeToWatchlist, getWatchedAccounts, () => [])
-  const activeAccount = useMemo(() => getActiveWatchedAccount(), [accounts])
+  const accounts = useSyncExternalStore(
+    subscribeToWatchlist,
+    getWatchedAccounts,
+    getServerWatchedAccountsSnapshot
+  )
+  const activeAccount = useMemo(
+    () => (accounts.length ? getActiveWatchedAccount(accounts) : undefined),
+    [accounts]
+  )
 
   const notifyWatchlistChanged = useCallback(() => {
     window.dispatchEvent(new Event(watchlistChangeEvent))
