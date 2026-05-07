@@ -4,7 +4,6 @@ import { Check, ChevronDown, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { Address } from 'viem'
 import { abbreviateAddress, isSameAddress } from '../../../shared/utils/addresses'
-import { Button } from '../ui/button'
 import {
   Sheet,
   SheetContent,
@@ -34,10 +33,13 @@ export function AccountSwitcherSheet({ activeAccount }: AccountSwitcherSheetProp
   return (
     <Sheet onOpenChange={setOpen} open={open}>
       <SheetTrigger asChild>
-        <Button className="min-w-32 rounded-full px-3" type="button" variant="secondary">
-          {abbreviateAddress(activeAccount.address)}
-          <ChevronDown aria-hidden className="h-4 w-4" />
-        </Button>
+        <button
+          className="flex min-h-10 min-w-32 items-center justify-center gap-1.5 rounded-full px-2 text-sm font-medium text-slate-200 transition hover:text-white"
+          type="button"
+        >
+          <span className="max-w-28 truncate">{abbreviateAddress(activeAccount.address)}</span>
+          <ChevronDown aria-hidden className="h-4 w-4 text-slate-500" />
+        </button>
       </SheetTrigger>
       <SheetPortal>
         <SheetOverlay />
@@ -72,15 +74,14 @@ export function AccountSwitcherSheet({ activeAccount }: AccountSwitcherSheetProp
                         {abbreviateAddress(account.address)}
                       </span>
                     </button>
-                    <Button
+                    <button
                       aria-label={`Remove ${abbreviateAddress(account.address)}`}
+                      className="flex h-11 w-11 items-center justify-center rounded-lg text-slate-500 transition hover:bg-white/[0.06] hover:text-white"
                       onClick={() => removeAccount(account.address)}
-                      size="icon"
                       type="button"
-                      variant="ghost"
                     >
                       <Trash2 aria-hidden className="h-4 w-4" />
-                    </Button>
+                    </button>
                   </div>
                 )
               })}

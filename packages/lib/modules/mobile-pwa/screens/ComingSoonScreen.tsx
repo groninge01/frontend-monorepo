@@ -1,6 +1,5 @@
 import { MobileShell } from '../layout/MobileShell'
 import { MobileTab, MobileTabBar } from '../navigation/MobileTabBar'
-import { Card } from '../ui/card'
 import { StatusChip } from '../ui/status-chip'
 
 type ComingSoonScreenProps = {
@@ -23,11 +22,11 @@ export function ComingSoonScreen({ activeTab, title }: ComingSoonScreenProps) {
           </div>
         </div>
 
-        <Card className="p-4">
+        <section className="rounded-3xl bg-white/[0.035] p-4">
           <p className="text-sm text-slate-300">
             Dashboard and Settings are available in this MVP. Transaction flows stay out of scope.
           </p>
-        </Card>
+        </section>
       </section>
     </MobileShell>
   )

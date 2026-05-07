@@ -13,15 +13,7 @@ export function MobileHome() {
 
   return (
     <MobileShell bottomNavigation={<MobileTabBar activeTab="dashboard" />}>
-      <section className="space-y-5">
-        <div className="space-y-2 pt-2">
-          <h1 className="text-4xl font-semibold tracking-normal">Portfolio dashboard</h1>
-          <p className="text-sm leading-6 text-slate-400">
-            Track Balancer positions by address. Wallet connection and transactions are not part of
-            this MVP.
-          </p>
-        </div>
-
+      <section>
         {activeAccount ? (
           <MobileDashboard account={activeAccount} />
         ) : (
