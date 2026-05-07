@@ -3,6 +3,7 @@
 import { Camera, X } from 'lucide-react'
 import { Scanner } from '@yudiel/react-qr-scanner'
 import { useCallback, useRef, useState } from 'react'
+import type { IDetectedBarcode } from '@yudiel/react-qr-scanner'
 import { Button } from '../ui/button'
 import {
   Sheet,
@@ -60,6 +61,26 @@ export function QrAddressScanner({ onAccountAdded, trigger }: QrAddressScannerPr
     }
   }, [])
 
+  const highlightCodeOnCanvas = useCallback(
+    (detectedCodes: IDetectedBarcode[], ctx: CanvasRenderingContext2D) => {
+      detectedCodes.forEach(detectedCode => {
+        const { boundingBox, cornerPoints } = detectedCode
+
+        ctx.strokeStyle = '#00FF00'
+        ctx.lineWidth = 4
+        ctx.strokeRect(boundingBox.x, boundingBox.y, boundingBox.width, boundingBox.height)
+
+        ctx.fillStyle = '#FF0000'
+        cornerPoints.forEach(point => {
+          ctx.beginPath()
+          ctx.arc(point.x, point.y, 5, 0, 2 * Math.PI)
+          ctx.fill()
+        })
+      })
+    },
+    []
+  )
+
   return (
     <Sheet onOpenChange={handleOpenChange} open={open}>
       <SheetTrigger asChild>
@@ -75,7 +96,7 @@ export function QrAddressScanner({ onAccountAdded, trigger }: QrAddressScannerPr
         <SheetContent className="inset-0 max-h-none max-w-none rounded-none border-0 bg-black p-0">
           <SheetTitle className="sr-only">Scan address</SheetTitle>
           <Scanner
-            components={{ finder: false }}
+            components={{ finder: true, tracker: highlightCodeOnCanvas }}
             constraints={{ facingMode: 'environment' }}
             onError={() =>
               setStatus('Camera permission was not granted. Paste the QR payload instead.')
