@@ -71,7 +71,10 @@ export function AccountSwitcherSheet({ activeAccount }: AccountSwitcherSheetProp
                         {isActive ? (
                           <Check aria-hidden className="h-4 w-4 text-emerald-200" />
                         ) : null}
-                        {abbreviateAddress(account.address)}
+                        <span>{abbreviateAddress(account.address)}</span>
+                        {isActive ? (
+                          <span className="text-xs font-medium text-slate-500">Read-only</span>
+                        ) : null}
                       </span>
                     </button>
                     <button

@@ -7,7 +7,6 @@ import { useWatchedPortfolio } from '../portfolio/useWatchedPortfolio'
 import { readCachedDashboard, writeCachedDashboard } from '../pwa/dashboard-cache'
 import { useOnlineStatus } from '../pwa/useOnlineStatus'
 import { Button } from '../ui/button'
-import { StatusChip } from '../ui/status-chip'
 import { WatchedAccount } from '../watchlist/watchlist.types'
 
 type MobileDashboardProps = {
@@ -23,7 +22,6 @@ export function MobileDashboard({ account }: MobileDashboardProps) {
   )
   const dashboard = portfolio.data || (!isOnline ? cachedDashboard : undefined)
   const isUsingStaleData = !portfolio.data && !isOnline && !!cachedDashboard
-  const statusTone = portfolio.status === 'error' && !isUsingStaleData ? 'danger' : 'warning'
 
   useEffect(() => {
     if (portfolio.data) writeCachedDashboard(portfolio.data, Date.now())
@@ -32,16 +30,11 @@ export function MobileDashboard({ account }: MobileDashboardProps) {
   return (
     <div className="space-y-10">
       <section className="space-y-5 pt-2">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Portfolio value</p>
-            <p className="mt-3 text-5xl font-semibold tracking-tight">
-              {formatUsd(dashboard?.totalValue || 0)}
-            </p>
-          </div>
-          <StatusChip className="mt-1 shrink-0" tone={statusTone}>
-            {isUsingStaleData ? 'Stale' : portfolio.status === 'loading' ? 'Loading' : 'Read-only'}
-          </StatusChip>
+        <div>
+          <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Portfolio value</p>
+          <p className="mt-3 text-5xl font-semibold tracking-tight">
+            {formatUsd(dashboard?.totalValue || 0)}
+          </p>
         </div>
 
         <div>
