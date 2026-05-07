@@ -2,6 +2,7 @@
 
 import { RefreshCcw } from 'lucide-react'
 import { useEffect, useMemo } from 'react'
+import { chainGradient } from '@repo/lib/shared/services/chakra/chain-gradient'
 import { MobilePortfolioViewModel } from '../portfolio/mobilePortfolio.types'
 import { useWatchedPortfolio } from '../portfolio/useWatchedPortfolio'
 import { readCachedDashboard, writeCachedDashboard } from '../pwa/dashboard-cache'
@@ -125,6 +126,7 @@ function ChainAllocationCard({
         <div className="space-y-3">
           {allocations.slice(0, 4).map(allocation => {
             const percentage = totalValue ? Math.round((allocation.value / totalValue) * 100) : 0
+            const chainGrad = chainGradient[allocation.chain]
 
             return (
               <div className="space-y-2" key={allocation.chain}>
@@ -136,8 +138,13 @@ function ChainAllocationCard({
                 </div>
                 <div className="h-2 overflow-hidden rounded-full bg-[var(--mobile-bg-level-0)]">
                   <div
-                    className="h-full rounded-full bg-[var(--mobile-gradient-allocation)]"
-                    style={{ width: `${Math.max(percentage, 4)}%` }}
+                    className="h-full rounded-full"
+                    style={{
+                      background: chainGrad
+                        ? `linear-gradient(90deg, ${chainGrad.from}, ${chainGrad.to})`
+                        : 'var(--mobile-gradient-allocation)',
+                      width: `${Math.max(percentage, 4)}%`,
+                    }}
                   />
                 </div>
               </div>
@@ -171,23 +178,22 @@ function PositionsCard({
       {isLoading ? (
         <PositionsSkeleton />
       ) : positions.length ? (
-        <div className="divide-y divide-[var(--mobile-border-zen)] border-y border-[var(--mobile-border-zen)]">
+        <div className="divide-y divide-[var(--mobile-border-zen)] border-t border-[var(--mobile-border-zen)]">
           {positions.slice(0, 5).map(position => (
-            <div
-              className="flex min-h-16 items-center justify-between gap-3 py-3"
-              key={position.id}
-            >
+            <div className="flex min-h-16 items-start justify-between gap-3 py-3" key={position.id}>
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-[var(--mobile-text-primary)]">
-                  {position.name}
-                </p>
+                <div className="flex items-baseline gap-2">
+                  <p className="truncate text-sm font-semibold text-[var(--mobile-text-primary)]">
+                    {position.name}
+                  </p>
+                  <p className="shrink-0 text-sm font-semibold text-[var(--mobile-text-primary)]">
+                    {formatUsd(position.totalBalanceUsd)}
+                  </p>
+                </div>
                 <p className="mt-1 text-xs text-[var(--mobile-text-muted)]">
                   {formatChain(position.chain)}
                 </p>
               </div>
-              <p className="shrink-0 text-sm font-semibold text-[var(--mobile-text-primary)]">
-                {formatUsd(position.totalBalanceUsd)}
-              </p>
             </div>
           ))}
         </div>
@@ -218,7 +224,7 @@ function ChainAllocationSkeleton() {
 
 function PositionsSkeleton() {
   return (
-    <div className="divide-y divide-[var(--mobile-border-zen)] border-y border-[var(--mobile-border-zen)]">
+    <div className="divide-y divide-[var(--mobile-border-zen)] border-t border-[var(--mobile-border-zen)]">
       {Array.from({ length: 4 }).map((_, index) => (
         <div className="flex min-h-16 items-center justify-between gap-3 py-3" key={index}>
           <div className="min-w-0 flex-1 space-y-2">
