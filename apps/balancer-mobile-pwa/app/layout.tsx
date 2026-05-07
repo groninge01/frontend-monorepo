@@ -8,8 +8,8 @@ export const metadata: Metadata = {
   title: "Balancer Mobile",
   description: "A mobile-first PWA for watching Balancer portfolio positions.",
   icons: [
-    { rel: "icon", url: "/icon.svg" },
-    { rel: "apple-touch-icon", url: "/icon.svg" },
+    { rel: "icon", url: "/favicon-dark.png" },
+    { rel: "apple-touch-icon", url: "/favicon-dark.png" },
   ],
   appleWebApp: {
     capable: true,
