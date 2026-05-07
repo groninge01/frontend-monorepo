@@ -9,8 +9,8 @@ type MobileShellProps = {
 
 export function MobileShell({ bottomNavigation, children }: MobileShellProps) {
   return (
-    <div className="min-h-dvh bg-[#070a10] text-white">
-      <div className="mx-auto min-h-dvh w-full max-w-[430px] overflow-hidden bg-[#12161f] shadow-[0_0_80px_rgba(0,0,0,0.55)]">
+    <div className="min-h-dvh bg-[var(--mobile-bg-base)] text-[var(--mobile-text-primary)]">
+      <div className="mx-auto min-h-dvh w-full max-w-[430px] overflow-hidden bg-[var(--mobile-bg-level-1)] shadow-[0_0_80px_rgba(0,0,0,0.3)]">
         <div
           className={cn(
             'relative flex min-h-dvh flex-col',

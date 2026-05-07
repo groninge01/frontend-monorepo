@@ -104,7 +104,7 @@ function AddressInput({ onAccountAdded }: AddressInputProps) {
         <div className="absolute inset-y-0 right-2 flex items-center gap-1">
           <button
             aria-label="Paste address"
-            className="flex h-9 w-9 items-center justify-center rounded-md text-slate-500 transition hover:bg-white/[0.06] hover:text-white"
+            className="flex h-9 w-9 items-center justify-center rounded-md text-[var(--mobile-text-muted)] transition hover:bg-[rgba(229,211,190,0.06)] hover:text-[var(--mobile-text-primary)]"
             onClick={pasteFromClipboard}
             type="button"
           >
@@ -115,7 +115,7 @@ function AddressInput({ onAccountAdded }: AddressInputProps) {
             trigger={
               <button
                 aria-label="Scan address"
-                className="flex h-9 w-9 items-center justify-center rounded-md text-slate-500 transition hover:bg-white/[0.06] hover:text-white"
+                className="flex h-9 w-9 items-center justify-center rounded-md text-[var(--mobile-text-muted)] transition hover:bg-[rgba(229,211,190,0.06)] hover:text-[var(--mobile-text-primary)]"
                 type="button"
               >
                 <QrCode aria-hidden size={20} />
@@ -124,7 +124,7 @@ function AddressInput({ onAccountAdded }: AddressInputProps) {
           />
         </div>
       </div>
-      {error ? <p className="text-sm text-red-200">{error}</p> : null}
+      {error ? <p className="text-sm text-[var(--mobile-text-error)]">{error}</p> : null}
     </div>
   )
 }
@@ -143,7 +143,7 @@ export function AddressInputSheet({ onAccountAdded }: AddressInputProps) {
           <SheetHandle />
           <div className="space-y-1">
             <SheetTitle className="text-base font-semibold">Add address</SheetTitle>
-            <SheetDescription className="text-sm leading-6 text-slate-400">
+            <SheetDescription className="text-sm leading-6 text-[var(--mobile-text-secondary)]">
               Save an address and make it active on this device.
             </SheetDescription>
           </div>

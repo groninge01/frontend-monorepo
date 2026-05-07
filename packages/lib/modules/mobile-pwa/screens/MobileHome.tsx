@@ -18,9 +18,9 @@ export function MobileHome() {
           <MobileDashboard account={activeAccount} />
         ) : (
           <div className="space-y-2 py-8 text-center">
-            <p className="text-sm text-slate-400">
-              Tap the <span className="text-white font-medium">+</span> icon below to watch an
-              address.
+            <p className="text-sm text-[var(--mobile-text-secondary)]">
+              Tap the <span className="font-medium text-[var(--mobile-text-primary)]">+</span> icon
+              below to watch an address.
             </p>
           </div>
         )}

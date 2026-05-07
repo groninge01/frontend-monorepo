@@ -9,10 +9,13 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          'bg-[linear-gradient(135deg,#a9a5f5_0%,#d8cce9_45%,#ef9454_100%)] text-slate-950 shadow-[0_12px_30px_rgba(127,106,232,0.28)]',
-        secondary: 'border border-white/10 bg-white/[0.07] text-white hover:bg-white/[0.1]',
-        ghost: 'text-slate-300 hover:bg-white/[0.06] hover:text-white',
-        danger: 'border border-red-400/30 bg-red-500/10 text-red-100 hover:bg-red-500/15',
+          'bg-[var(--mobile-gradient-primary)] text-[var(--mobile-bg-level-1)] shadow-[0_12px_30px_rgba(127,106,232,0.28)]',
+        secondary:
+          'border border-[var(--mobile-border-zen)] bg-[var(--mobile-bg-level-2)] text-[var(--mobile-text-primary)] hover:bg-[var(--mobile-bg-level-3)]',
+        ghost:
+          'text-[var(--mobile-text-secondary)] hover:bg-[rgba(229,211,190,0.06)] hover:text-[var(--mobile-text-primary)]',
+        danger:
+          'border border-[rgba(244,137,117,0.3)] bg-[rgba(234,98,73,0.12)] text-[var(--mobile-text-error)] hover:bg-[rgba(234,98,73,0.18)]',
       },
       size: {
         sm: 'h-10 px-3',

@@ -15,15 +15,15 @@ export function ComingSoonScreen({ activeTab, title }: ComingSoonScreenProps) {
           <StatusChip>Coming later</StatusChip>
           <div className="space-y-2">
             <h1 className="text-3xl font-semibold tracking-normal">{title}</h1>
-            <p className="max-w-72 text-sm leading-6 text-slate-400">
+            <p className="max-w-72 text-sm leading-6 text-[var(--mobile-text-secondary)]">
               This area is part of the mobile app skeleton and will be built after the portfolio
               dashboard MVP.
             </p>
           </div>
         </div>
 
-        <section className="rounded-3xl bg-white/[0.035] p-4">
-          <p className="text-sm text-slate-300">
+        <section className="rounded-3xl bg-[var(--mobile-bg-level-2)] p-4">
+          <p className="text-sm text-[var(--mobile-text-primary)]">
             Dashboard and Settings are available in this MVP. Transaction flows stay out of scope.
           </p>
         </section>

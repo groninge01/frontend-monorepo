@@ -15,15 +15,15 @@ export function MobileSettings() {
       <section className="space-y-6">
         <div className="space-y-2 pt-2">
           <h1 className="text-3xl font-semibold tracking-normal">Settings</h1>
-          <p className="text-sm leading-6 text-slate-400">
+          <p className="text-sm leading-6 text-[var(--mobile-text-secondary)]">
             Device-level app preferences and installation status.
           </p>
         </div>
 
-        <section className="space-y-3 rounded-2xl bg-white/[0.04] p-4">
+        <section className="space-y-3 rounded-2xl bg-[var(--mobile-bg-level-2)] p-4">
           <div className="space-y-1">
-            <h2 className="text-sm font-semibold text-white">PWA status</h2>
-            <p className="text-sm text-slate-400">
+            <h2 className="text-sm font-semibold text-[var(--mobile-text-primary)]">PWA status</h2>
+            <p className="text-sm text-[var(--mobile-text-secondary)]">
               {isOnline
                 ? 'Online and ready for live portfolio data.'
                 : 'Offline. Cached dashboard data may be shown.'}

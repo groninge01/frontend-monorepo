@@ -7,10 +7,13 @@ export type StatusChipProps = HTMLAttributes<HTMLDivElement> & {
 
 export function StatusChip({ className, tone = 'neutral', ...props }: StatusChipProps) {
   const toneClass = {
-    danger: 'border-red-400/30 bg-red-500/10 text-red-100',
-    neutral: 'border-white/10 bg-white/[0.06] text-slate-300',
-    success: 'border-emerald-400/30 bg-emerald-500/10 text-emerald-100',
-    warning: 'border-orange-300/30 bg-orange-400/10 text-orange-100',
+    danger:
+      'border-[rgba(244,137,117,0.3)] bg-[rgba(234,98,73,0.12)] text-[var(--mobile-text-error)]',
+    neutral:
+      'border-[var(--mobile-border-zen)] bg-[var(--mobile-bg-level-2)] text-[var(--mobile-text-secondary)]',
+    success: 'border-[rgba(0,211,149,0.3)] bg-[rgba(0,211,149,0.12)] text-[var(--mobile-green)]',
+    warning:
+      'border-[rgba(253,186,116,0.3)] bg-[rgba(253,186,116,0.12)] text-[var(--mobile-text-warning)]',
   }[tone]
 
   return (

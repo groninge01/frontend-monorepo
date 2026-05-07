@@ -30,7 +30,7 @@ export function MobileTabBar({ activeTab }: MobileTabBarProps) {
   }
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-[430px] border-t border-white/10 bg-[#111722]/95 px-3 pb-[calc(env(safe-area-inset-bottom)+8px)] pt-2 backdrop-blur-xl">
+    <nav className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-[430px] border-t border-[var(--mobile-border-zen)] bg-[var(--mobile-bg-level-1)]/95 px-3 pb-[calc(env(safe-area-inset-bottom)+8px)] pt-2 backdrop-blur-xl">
       <div className="grid grid-cols-5 gap-1">
         {tabs.map(tab => {
           const Icon = tab.icon
@@ -41,8 +41,8 @@ export function MobileTabBar({ activeTab }: MobileTabBarProps) {
               <Link
                 aria-current={active ? 'page' : undefined}
                 className={cn(
-                  'flex min-h-14 items-center justify-center rounded-lg text-slate-500 transition',
-                  active && 'text-[#7f6ae8]'
+                  'flex min-h-14 items-center justify-center rounded-lg text-[var(--mobile-text-muted)] transition',
+                  active && 'text-[var(--mobile-purple)]'
                 )}
                 href={tab.href}
                 key={tab.id}
@@ -60,7 +60,7 @@ export function MobileTabBar({ activeTab }: MobileTabBarProps) {
               onClick={() => setOpen(true)}
               type="button"
             >
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#7f6ae8] text-white shadow-[0_10px_30px_rgba(127,106,232,0.35)] transition active:scale-95">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--mobile-purple)] text-white shadow-[0_10px_30px_rgba(127,106,232,0.35)] transition active:scale-95">
                 <Icon aria-hidden="true" size={30} strokeWidth={2.6} />
               </span>
             </button>

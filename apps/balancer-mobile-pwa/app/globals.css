@@ -3,8 +3,40 @@
 @source "../../../packages/lib/modules/mobile-pwa/**/*.{ts,tsx}";
 
 :root {
+  --mobile-bg-base: hsla(216, 12%, 25%, 1);
+  --mobile-bg-level-0: #31373f;
+  --mobile-bg-level-1: #383e47;
+  --mobile-bg-level-2: #3f4650;
+  --mobile-bg-level-3: #464d58;
+  --mobile-bg-overlay: rgba(0, 0, 0, 0.55);
+  --mobile-border-base: #4c5561;
+  --mobile-border-divider: #1a202c;
+  --mobile-border-zen: rgba(76, 85, 97, 0.5);
+  --mobile-purple: #7f6ae8;
+  --mobile-purple-highlight: #9f95f0;
+  --mobile-green: #00d395;
+  --mobile-text-primary: #e5d3be;
+  --mobile-text-secondary: #a0aec0;
+  --mobile-text-muted: rgba(160, 174, 192, 0.62);
+  --mobile-text-error: #f48975;
+  --mobile-text-warning: #fdba74;
+  --mobile-gradient-primary: linear-gradient(
+    135deg,
+    hsla(244, 78%, 82%, 1) 0%,
+    hsla(266, 37%, 85%, 1) 40%,
+    hsla(0, 36%, 84%, 1) 60%,
+    rgb(239, 148, 84) 100%,
+    rgb(255, 138, 54) 140%
+  );
+  --mobile-gradient-allocation: linear-gradient(90deg, var(--mobile-purple), var(--mobile-green));
+  --mobile-gradient-skeleton: linear-gradient(
+    90deg,
+    rgba(229, 211, 190, 0.06),
+    rgba(229, 211, 190, 0.14),
+    rgba(229, 211, 190, 0.06)
+  );
   color-scheme: dark;
-  background: #070a10;
+  background: var(--mobile-bg-base);
 }
 
 html,
@@ -13,7 +45,7 @@ body {
 }
 
 body {
-  background: #070a10;
+  background: var(--mobile-bg-base);
   margin: 0;
   overflow-x: hidden;
 }

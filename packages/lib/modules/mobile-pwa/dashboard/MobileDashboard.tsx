@@ -33,7 +33,9 @@ export function MobileDashboard({ account }: MobileDashboardProps) {
     <div className="space-y-10">
       <section className="space-y-5 pt-2">
         <div>
-          <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Portfolio value</p>
+          <p className="text-xs uppercase tracking-[0.18em] text-[var(--mobile-text-muted)]">
+            Portfolio value
+          </p>
           {isLoading ? (
             <Skeleton className="mt-4 h-12 w-56 rounded-xl" />
           ) : (
@@ -45,10 +47,12 @@ export function MobileDashboard({ account }: MobileDashboardProps) {
 
         <div>
           {isUsingStaleData ? (
-            <p className="mt-2 text-sm text-orange-100">Offline. Showing cached data.</p>
+            <p className="mt-2 text-sm text-[var(--mobile-text-warning)]">
+              Offline. Showing cached data.
+            </p>
           ) : null}
           {portfolio.status === 'error' && !isUsingStaleData ? (
-            <div className="mt-3 flex items-center justify-between gap-3 rounded-lg border border-red-400/20 bg-red-500/10 p-3 text-sm text-red-100">
+            <div className="mt-3 flex items-center justify-between gap-3 rounded-lg border border-[rgba(244,137,117,0.24)] bg-[rgba(234,98,73,0.12)] p-3 text-sm text-[var(--mobile-text-error)]">
               <span>Portfolio data could not be loaded.</span>
               <Button onClick={() => portfolio.refetch()} size="sm" type="button" variant="ghost">
                 <RefreshCcw aria-hidden className="h-4 w-4" />
@@ -58,7 +62,7 @@ export function MobileDashboard({ account }: MobileDashboardProps) {
           ) : null}
         </div>
 
-        <div className="grid grid-cols-2 divide-x divide-white/10 border-y border-white/10 py-3 text-sm">
+        <div className="grid grid-cols-2 divide-x divide-[var(--mobile-border-zen)] border-y border-[var(--mobile-border-zen)] py-3 text-sm">
           <Metric isLoading={isLoading} label="Claimable" value={formatClaimable(dashboard)} />
           <Metric
             isLoading={isLoading}
@@ -87,11 +91,11 @@ function Metric({
 }) {
   return (
     <div className="px-3 first:pl-0 last:pr-0">
-      <p className="text-xs uppercase tracking-[0.16em] text-slate-500">{label}</p>
+      <p className="text-xs uppercase tracking-[0.16em] text-[var(--mobile-text-muted)]">{label}</p>
       {isLoading ? (
         <Skeleton className="mt-3 h-5 w-20 rounded-md" />
       ) : (
-        <p className="mt-2 font-semibold text-white">{value}</p>
+        <p className="mt-2 font-semibold text-[var(--mobile-text-primary)]">{value}</p>
       )}
     </div>
   )
@@ -110,8 +114,10 @@ function ChainAllocationCard({
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between gap-3">
-        <h2 className="text-sm font-semibold text-white">Chain allocation</h2>
-        <span className="text-xs text-slate-500">{allocations.length} chains</span>
+        <h2 className="text-sm font-semibold text-[var(--mobile-text-primary)]">
+          Chain allocation
+        </h2>
+        <span className="text-xs text-[var(--mobile-text-muted)]">{allocations.length} chains</span>
       </div>
       {isLoading ? (
         <ChainAllocationSkeleton />
@@ -123,12 +129,14 @@ function ChainAllocationCard({
             return (
               <div className="space-y-2" key={allocation.chain}>
                 <div className="flex items-center justify-between gap-3 text-sm">
-                  <span className="font-medium text-white">{formatChain(allocation.chain)}</span>
-                  <span className="text-slate-400">{percentage}%</span>
+                  <span className="font-medium text-[var(--mobile-text-primary)]">
+                    {formatChain(allocation.chain)}
+                  </span>
+                  <span className="text-[var(--mobile-text-secondary)]">{percentage}%</span>
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-white/10">
+                <div className="h-2 overflow-hidden rounded-full bg-[var(--mobile-bg-level-0)]">
                   <div
-                    className="h-full rounded-full bg-[linear-gradient(90deg,#7f6ae8,#00d395)]"
+                    className="h-full rounded-full bg-[var(--mobile-gradient-allocation)]"
                     style={{ width: `${Math.max(percentage, 4)}%` }}
                   />
                 </div>
@@ -137,7 +145,7 @@ function ChainAllocationCard({
           })}
         </div>
       ) : (
-        <p className="border-t border-white/10 pt-3 text-sm text-slate-400">
+        <p className="border-t border-[var(--mobile-border-zen)] pt-3 text-sm text-[var(--mobile-text-secondary)]">
           No active chain balances.
         </p>
       )}
@@ -157,30 +165,34 @@ function PositionsCard({
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between gap-3">
-        <h2 className="text-sm font-semibold text-white">Positions</h2>
-        <span className="text-xs text-slate-500">{positions.length} pools</span>
+        <h2 className="text-sm font-semibold text-[var(--mobile-text-primary)]">Positions</h2>
+        <span className="text-xs text-[var(--mobile-text-muted)]">{positions.length} pools</span>
       </div>
       {isLoading ? (
         <PositionsSkeleton />
       ) : positions.length ? (
-        <div className="divide-y divide-white/10 border-y border-white/10">
+        <div className="divide-y divide-[var(--mobile-border-zen)] border-y border-[var(--mobile-border-zen)]">
           {positions.slice(0, 5).map(position => (
             <div
               className="flex min-h-16 items-center justify-between gap-3 py-3"
               key={position.id}
             >
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-white">{position.name}</p>
-                <p className="mt-1 text-xs text-slate-500">{formatChain(position.chain)}</p>
+                <p className="truncate text-sm font-semibold text-[var(--mobile-text-primary)]">
+                  {position.name}
+                </p>
+                <p className="mt-1 text-xs text-[var(--mobile-text-muted)]">
+                  {formatChain(position.chain)}
+                </p>
               </div>
-              <p className="shrink-0 text-sm font-semibold text-white">
+              <p className="shrink-0 text-sm font-semibold text-[var(--mobile-text-primary)]">
                 {formatUsd(position.totalBalanceUsd)}
               </p>
             </div>
           ))}
         </div>
       ) : (
-        <p className="border-t border-white/10 pt-3 text-sm text-slate-400">
+        <p className="border-t border-[var(--mobile-border-zen)] pt-3 text-sm text-[var(--mobile-text-secondary)]">
           No pool positions found for this address.
         </p>
       )}
@@ -206,7 +218,7 @@ function ChainAllocationSkeleton() {
 
 function PositionsSkeleton() {
   return (
-    <div className="divide-y divide-white/10 border-y border-white/10">
+    <div className="divide-y divide-[var(--mobile-border-zen)] border-y border-[var(--mobile-border-zen)]">
       {Array.from({ length: 4 }).map((_, index) => (
         <div className="flex min-h-16 items-center justify-between gap-3 py-3" key={index}>
           <div className="min-w-0 flex-1 space-y-2">
@@ -224,7 +236,7 @@ function Skeleton({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        'animate-pulse bg-[linear-gradient(90deg,rgba(255,255,255,0.055),rgba(255,255,255,0.12),rgba(255,255,255,0.055))] bg-[length:220%_100%]',
+        'animate-pulse bg-[var(--mobile-gradient-skeleton)] bg-[length:220%_100%]',
         className
       )}
     />
