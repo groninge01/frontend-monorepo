@@ -17,6 +17,7 @@ import { parseQrAddressPayload } from '../watchlist/qr-parser'
 import { useWatchlist } from '../watchlist/useWatchlist'
 
 type QrAddressScannerProps = {
+  trigger?: React.ReactNode
   onAccountAdded?: () => void
 }
 
@@ -32,7 +33,7 @@ declare global {
   }
 }
 
-export function QrAddressScanner({ onAccountAdded }: QrAddressScannerProps) {
+export function QrAddressScanner({ onAccountAdded, trigger }: QrAddressScannerProps) {
   const { addAccount } = useWatchlist()
   const [open, setOpen] = useState(false)
   const [manualPayload, setManualPayload] = useState('')
@@ -141,10 +142,12 @@ export function QrAddressScanner({ onAccountAdded }: QrAddressScannerProps) {
   return (
     <Sheet onOpenChange={setOpen} open={open}>
       <SheetTrigger asChild>
-        <Button type="button" variant="secondary">
-          <Camera aria-hidden className="h-4 w-4" />
-          Scan
-        </Button>
+        {trigger ?? (
+          <Button type="button" variant="secondary">
+            <Camera aria-hidden className="h-4 w-4" />
+            Scan
+          </Button>
+        )}
       </SheetTrigger>
       <SheetPortal>
         <SheetOverlay />
