@@ -1,13 +1,11 @@
 'use client'
 
-import { Camera, Clipboard } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { Camera, X } from 'lucide-react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Button } from '../ui/button'
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
-  SheetHandle,
   SheetOverlay,
   SheetPortal,
   SheetTitle,
@@ -36,10 +34,32 @@ declare global {
 export function QrAddressScanner({ onAccountAdded, trigger }: QrAddressScannerProps) {
   const { addAccount } = useWatchlist()
   const [open, setOpen] = useState(false)
-  const [manualPayload, setManualPayload] = useState('')
   const [status, setStatus] = useState('Point the camera at an address QR code.')
   const videoRef = useRef<HTMLVideoElement>(null)
   const handledPayloadRef = useRef(false)
+
+  const handlePayload = useCallback(
+    (payload: string) => {
+      const result = parseQrAddressPayload(payload)
+
+      if (result.type === 'invalid') {
+        setStatus('This QR code does not contain a supported wallet address.')
+        return
+      }
+
+      if (result.type === 'ens') {
+        setStatus('ENS QR payloads are recognized, but ENS resolution is not wired yet.')
+        return
+      }
+
+      handledPayloadRef.current = true
+      addAccount({ address: result.address })
+      setStatus('Address saved.')
+      setOpen(false)
+      onAccountAdded?.()
+    },
+    [addAccount, onAccountAdded]
+  )
 
   useEffect(() => {
     if (!open) return
@@ -108,36 +128,7 @@ export function QrAddressScanner({ onAccountAdded, trigger }: QrAddressScannerPr
       if (stream) stopStream(stream)
       if (videoRef.current) videoRef.current.srcObject = null
     }
-  }, [open])
-
-  function handlePayload(payload: string) {
-    const result = parseQrAddressPayload(payload)
-
-    if (result.type === 'invalid') {
-      setStatus('This QR code does not contain a supported wallet address.')
-      return
-    }
-
-    if (result.type === 'ens') {
-      setStatus('ENS QR payloads are recognized, but ENS resolution is not wired yet.')
-      return
-    }
-
-    handledPayloadRef.current = true
-    addAccount({ address: result.address })
-    setManualPayload('')
-    setStatus('Address saved.')
-    setOpen(false)
-    onAccountAdded?.()
-  }
-
-  async function pastePayload() {
-    const clipboardText = await navigator.clipboard?.readText()
-    if (clipboardText) {
-      setManualPayload(clipboardText)
-      handlePayload(clipboardText)
-    }
-  }
+  }, [handlePayload, open])
 
   return (
     <Sheet onOpenChange={setOpen} open={open}>
@@ -150,28 +141,36 @@ export function QrAddressScanner({ onAccountAdded, trigger }: QrAddressScannerPr
         )}
       </SheetTrigger>
       <SheetPortal>
-        <SheetOverlay />
-        <SheetContent className="space-y-4">
-          <SheetHandle />
-          <div className="space-y-1">
-            <SheetTitle className="text-base font-semibold">Scan address</SheetTitle>
-            <SheetDescription className="text-sm leading-6 text-slate-400">
-              Scan an Ethereum address QR code or paste its payload.
-            </SheetDescription>
+        <SheetOverlay className="bg-black" />
+        <SheetContent className="inset-0 max-h-none max-w-none rounded-none border-0 bg-black p-0">
+          <SheetTitle className="sr-only">Scan address</SheetTitle>
+          <video
+            className="absolute inset-0 h-full w-full object-cover"
+            muted
+            playsInline
+            ref={videoRef}
+          />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,transparent_36%,rgba(0,0,0,0.46)_58%,rgba(0,0,0,0.72)_100%)]" />
+          <button
+            aria-label="Close scanner"
+            className="absolute right-4 top-[calc(env(safe-area-inset-top)+16px)] z-10 flex h-11 w-11 items-center justify-center rounded-full bg-black/55 text-white backdrop-blur-md transition hover:bg-black/70"
+            onClick={() => setOpen(false)}
+            type="button"
+          >
+            <X aria-hidden size={24} />
+          </button>
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-10">
+            <div className="relative aspect-square w-full max-w-72">
+              <span className="absolute left-0 top-0 h-12 w-12 rounded-tl-2xl border-l-4 border-t-4 border-white" />
+              <span className="absolute right-0 top-0 h-12 w-12 rounded-tr-2xl border-r-4 border-t-4 border-white" />
+              <span className="absolute bottom-0 left-0 h-12 w-12 rounded-bl-2xl border-b-4 border-l-4 border-white" />
+              <span className="absolute bottom-0 right-0 h-12 w-12 rounded-br-2xl border-b-4 border-r-4 border-white" />
+            </div>
           </div>
-          <div className="relative aspect-square overflow-hidden rounded-lg border border-white/10 bg-black">
-            <video className="h-full w-full object-cover" muted playsInline ref={videoRef} />
-            <div className="pointer-events-none absolute inset-8 rounded-lg border border-white/40" />
-          </div>
-          <p className="min-h-10 text-sm leading-5 text-slate-300">{status}</p>
-          <div className="grid grid-cols-2 gap-2">
-            <Button onClick={pastePayload} type="button" variant="secondary">
-              <Clipboard aria-hidden className="h-4 w-4" />
-              Paste
-            </Button>
-            <Button onClick={() => handlePayload(manualPayload)} type="button" variant="primary">
-              Save
-            </Button>
+          <div className="absolute inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+32px)] px-6 text-center">
+            <p className="rounded-full bg-black/60 px-4 py-3 text-sm leading-5 text-white backdrop-blur-md">
+              {status}
+            </p>
           </div>
         </SheetContent>
       </SheetPortal>

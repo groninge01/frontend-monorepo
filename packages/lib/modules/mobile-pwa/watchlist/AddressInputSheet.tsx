@@ -1,13 +1,12 @@
 'use client'
 
-import { FormEvent, useState } from 'react'
+import { useRef, useState } from 'react'
 import { Clipboard, QrCode } from 'lucide-react'
 import { useMandatoryContext } from '../../../shared/utils/contexts'
 import { useWatchlist } from './useWatchlist'
 import { WatchAddressProviderContext } from './WatchAddressProvider'
-import { parseWatchAccountInput } from './address-input'
+import { isCompleteEthereumAddress, parseWatchAccountInput } from './address-input'
 import { QrAddressScanner } from '../account/QrAddressScanner'
-import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import {
   Sheet,
@@ -27,23 +26,52 @@ function AddressInput({ onAccountAdded }: AddressInputProps) {
   const { addAccount } = useWatchlist()
   const [input, setInput] = useState('')
   const [error, setError] = useState<string | undefined>()
+  const submittedAddressRef = useRef<string | undefined>(undefined)
 
-  function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const result = parseWatchAccountInput(input)
+  function validateAndAddAddress(value: string) {
+    const trimmedValue = value.trim()
+
+    if (!trimmedValue) {
+      submittedAddressRef.current = undefined
+      setError(undefined)
+      return
+    }
+
+    if (!trimmedValue.startsWith('0x')) {
+      submittedAddressRef.current = undefined
+      setError('Address must start with 0x.')
+      return
+    }
+
+    if (trimmedValue.length < 42) {
+      submittedAddressRef.current = undefined
+      setError(undefined)
+      return
+    }
+
+    if (!isCompleteEthereumAddress(trimmedValue)) {
+      submittedAddressRef.current = undefined
+      setError('Address must be 0x followed by 40 hexadecimal characters.')
+      return
+    }
+
+    const result = parseWatchAccountInput(trimmedValue)
 
     if (result.type === 'invalid') {
-      setError(
-        result.reason === 'empty' ? 'Enter an address or ENS name.' : 'Invalid address or ENS name.'
-      )
+      submittedAddressRef.current = undefined
+      setError('Invalid address.')
       return
     }
 
     if (result.type === 'ens') {
+      submittedAddressRef.current = undefined
       setError('ENS resolution is not wired yet. Paste a 0x address for now.')
       return
     }
 
+    if (submittedAddressRef.current === result.address) return
+
+    submittedAddressRef.current = result.address
     addAccount({ address: result.address })
     setInput('')
     setError(undefined)
@@ -54,24 +82,21 @@ function AddressInput({ onAccountAdded }: AddressInputProps) {
     const clipboardText = await navigator.clipboard?.readText()
     if (clipboardText) {
       setInput(clipboardText)
-      const result = parseWatchAccountInput(clipboardText)
-      if (result.type === 'address') {
-        addAccount({ address: result.address })
-        setInput('')
-        setError(undefined)
-        onAccountAdded?.()
-      }
+      validateAndAddAddress(clipboardText)
     }
   }
 
   return (
-    <form className="space-y-3" onSubmit={submit}>
+    <div className="space-y-3">
       <div className="relative">
         <Input
           autoCapitalize="none"
           autoComplete="off"
           className="pr-24"
-          onChange={event => setInput(event.target.value)}
+          onChange={event => {
+            setInput(event.target.value)
+            validateAndAddAddress(event.target.value)
+          }}
           placeholder="0x... or name.eth"
           spellCheck={false}
           value={input}
@@ -100,10 +125,7 @@ function AddressInput({ onAccountAdded }: AddressInputProps) {
         </div>
       </div>
       {error ? <p className="text-sm text-red-200">{error}</p> : null}
-      <Button className="w-full" type="submit" variant="primary">
-        Continue
-      </Button>
-    </form>
+    </div>
   )
 }
 
