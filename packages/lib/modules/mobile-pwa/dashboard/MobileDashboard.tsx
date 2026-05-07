@@ -2,13 +2,11 @@
 
 import { RefreshCcw } from 'lucide-react'
 import { useEffect, useMemo } from 'react'
-import { AccountSwitcherSheet } from '../account/AccountSwitcherSheet'
 import { MobilePortfolioViewModel } from '../portfolio/mobilePortfolio.types'
 import { useWatchedPortfolio } from '../portfolio/useWatchedPortfolio'
 import { readCachedDashboard, writeCachedDashboard } from '../pwa/dashboard-cache'
 import { useOnlineStatus } from '../pwa/useOnlineStatus'
 import { Button } from '../ui/button'
-import { Card } from '../ui/card'
 import { StatusChip } from '../ui/status-chip'
 import { WatchedAccount } from '../watchlist/watchlist.types'
 
@@ -33,14 +31,11 @@ export function MobileDashboard({ account }: MobileDashboardProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-3">
-        <AccountSwitcherSheet activeAccount={account} />
-        <StatusChip tone={statusTone}>
-          {isUsingStaleData ? 'Stale' : portfolio.status === 'loading' ? 'Loading' : 'Read-only'}
-        </StatusChip>
-      </div>
+      <StatusChip className="w-fit" tone={statusTone}>
+        {isUsingStaleData ? 'Stale' : portfolio.status === 'loading' ? 'Loading' : 'Read-only'}
+      </StatusChip>
 
-      <Card className="space-y-5 p-4">
+      <section className="space-y-5 rounded-[28px] bg-[linear-gradient(145deg,rgba(127,106,232,0.2),rgba(255,255,255,0.055))] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.22)]">
         <div>
           <p className="text-xs uppercase text-slate-500">Portfolio value</p>
           <p className="mt-2 text-4xl font-semibold">{formatUsd(dashboard?.totalValue || 0)}</p>
@@ -62,7 +57,7 @@ export function MobileDashboard({ account }: MobileDashboardProps) {
           <Metric label="Claimable" value={formatClaimable(dashboard)} />
           <Metric label="Positions" value={`${dashboard?.positions.length || 0} pools`} />
         </div>
-      </Card>
+      </section>
 
       <ChainAllocationCard dashboard={dashboard} />
       <PositionsCard dashboard={dashboard} />
@@ -72,7 +67,7 @@ export function MobileDashboard({ account }: MobileDashboardProps) {
 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-white/10 bg-white/[0.04] p-3">
+    <div className="rounded-2xl bg-white/[0.055] p-3">
       <p className="text-xs uppercase text-slate-500">{label}</p>
       <p className="mt-1 font-semibold text-white">{value}</p>
     </div>
@@ -84,7 +79,7 @@ function ChainAllocationCard({ dashboard }: { dashboard: MobilePortfolioViewMode
   const allocations = dashboard?.chainAllocation || []
 
   return (
-    <Card className="space-y-3 p-4">
+    <section className="space-y-3 rounded-3xl bg-white/[0.035] p-4">
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-sm font-semibold text-white">Chain allocation</h2>
         <span className="text-xs text-slate-500">{allocations.length} chains</span>
@@ -111,11 +106,11 @@ function ChainAllocationCard({ dashboard }: { dashboard: MobilePortfolioViewMode
           })}
         </div>
       ) : (
-        <p className="rounded-lg border border-white/10 bg-white/[0.04] p-3 text-sm text-slate-400">
+        <p className="rounded-2xl bg-white/[0.04] p-3 text-sm text-slate-400">
           No active chain balances.
         </p>
       )}
-    </Card>
+    </section>
   )
 }
 
@@ -123,7 +118,7 @@ function PositionsCard({ dashboard }: { dashboard: MobilePortfolioViewModel | un
   const positions = dashboard?.positions || []
 
   return (
-    <Card className="space-y-3 p-4">
+    <section className="space-y-3 rounded-3xl bg-white/[0.035] p-4">
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-sm font-semibold text-white">Positions</h2>
         <span className="text-xs text-slate-500">{positions.length} pools</span>
@@ -132,7 +127,7 @@ function PositionsCard({ dashboard }: { dashboard: MobilePortfolioViewModel | un
         <div className="space-y-2">
           {positions.slice(0, 5).map(position => (
             <div
-              className="flex min-h-14 items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/[0.04] p-3"
+              className="flex min-h-14 items-center justify-between gap-3 rounded-2xl bg-white/[0.04] p-3"
               key={position.id}
             >
               <div className="min-w-0">
@@ -146,11 +141,11 @@ function PositionsCard({ dashboard }: { dashboard: MobilePortfolioViewModel | un
           ))}
         </div>
       ) : (
-        <p className="rounded-lg border border-white/10 bg-white/[0.04] p-3 text-sm text-slate-400">
+        <p className="rounded-2xl bg-white/[0.04] p-3 text-sm text-slate-400">
           No pool positions found for this address.
         </p>
       )}
-    </Card>
+    </section>
   )
 }
 
