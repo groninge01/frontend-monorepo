@@ -1,7 +1,7 @@
 'use client'
 
 import { AddressEntry } from '../account/AddressEntry'
-import { PortfolioSummaryPreview } from '../dashboard/PortfolioSummaryPreview'
+import { MobileDashboard } from '../dashboard/MobileDashboard'
 import { MobileShell } from '../layout/MobileShell'
 import { MobileTabBar } from '../navigation/MobileTabBar'
 import { PwaStatusChip } from '../pwa/PwaStatusChip'
@@ -25,7 +25,7 @@ export function MobileHome() {
           </p>
         </div>
 
-        {activeAccount ? <PortfolioSummaryPreview account={activeAccount} /> : <AddressEntry />}
+        {activeAccount ? <MobileDashboard account={activeAccount} /> : <AddressEntry />}
       </section>
     </MobileShell>
   )

@@ -12,6 +12,7 @@ export function mapMobilePortfolioPositions(pools: Pool[]): MobilePortfolioPosit
       name: pool.name,
       totalBalanceUsd: Number(getUserTotalBalanceUsd(pool)),
     }))
+    .sort((a, b) => b.totalBalanceUsd - a.totalBalanceUsd)
 }
 
 export function getMobilePortfolioTotalValue(positions: MobilePortfolioPosition[]) {
@@ -31,8 +32,10 @@ export function getMobilePortfolioChainAllocation(
     {} as Record<string, number>
   )
 
-  return Object.entries(valueByChain).map(([chain, value]) => ({
-    chain: chain as MobilePortfolioChainAllocation['chain'],
-    value,
-  }))
+  return Object.entries(valueByChain)
+    .map(([chain, value]) => ({
+      chain: chain as MobilePortfolioChainAllocation['chain'],
+      value,
+    }))
+    .sort((a, b) => b.value - a.value)
 }
