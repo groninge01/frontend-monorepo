@@ -5,11 +5,11 @@ import { MobilePwaProviders } from "@repo/lib/modules/mobile-pwa/providers/Mobil
 import "@mobile/app/globals.css";
 
 export const metadata: Metadata = {
-  title: "Balancer Mobile",
+  title: "Balancer",
   description: "A mobile-first PWA for watching Balancer portfolio positions.",
   icons: [
-    { rel: "icon", url: "/favicon-dark.png" },
-    { rel: "apple-touch-icon", url: "/favicon-dark.png" },
+    { rel: "icon", url: "/favicon-dark.avif" },
+    { rel: "apple-touch-icon", url: "/favicon-dark.avif" },
   ],
   appleWebApp: {
     capable: true,
