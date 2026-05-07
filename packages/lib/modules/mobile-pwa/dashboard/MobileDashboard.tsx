@@ -7,6 +7,7 @@ import { useWatchedPortfolio } from '../portfolio/useWatchedPortfolio'
 import { readCachedDashboard, writeCachedDashboard } from '../pwa/dashboard-cache'
 import { useOnlineStatus } from '../pwa/useOnlineStatus'
 import { Button } from '../ui/button'
+import { cn } from '../ui/cn'
 import { WatchedAccount } from '../watchlist/watchlist.types'
 
 type MobileDashboardProps = {
@@ -22,6 +23,7 @@ export function MobileDashboard({ account }: MobileDashboardProps) {
   )
   const dashboard = portfolio.data || (!isOnline ? cachedDashboard : undefined)
   const isUsingStaleData = !portfolio.data && !isOnline && !!cachedDashboard
+  const isLoading = portfolio.status === 'loading' && !dashboard
 
   useEffect(() => {
     if (portfolio.data) writeCachedDashboard(portfolio.data, Date.now())
@@ -32,9 +34,13 @@ export function MobileDashboard({ account }: MobileDashboardProps) {
       <section className="space-y-5 pt-2">
         <div>
           <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Portfolio value</p>
-          <p className="mt-3 text-5xl font-semibold tracking-tight">
-            {formatUsd(dashboard?.totalValue || 0)}
-          </p>
+          {isLoading ? (
+            <Skeleton className="mt-4 h-12 w-56 rounded-xl" />
+          ) : (
+            <p className="mt-3 text-5xl font-semibold tracking-tight">
+              {formatUsd(dashboard?.totalValue || 0)}
+            </p>
+          )}
         </div>
 
         <div>
@@ -53,29 +59,51 @@ export function MobileDashboard({ account }: MobileDashboardProps) {
         </div>
 
         <div className="grid grid-cols-2 divide-x divide-white/10 border-y border-white/10 py-3 text-sm">
-          <Metric label="Claimable" value={formatClaimable(dashboard)} />
-          <Metric label="Positions" value={`${dashboard?.positions.length || 0} pools`} />
+          <Metric isLoading={isLoading} label="Claimable" value={formatClaimable(dashboard)} />
+          <Metric
+            isLoading={isLoading}
+            label="Positions"
+            value={`${dashboard?.positions.length || 0} pools`}
+          />
         </div>
       </section>
 
       <div className="space-y-10">
-        <ChainAllocationCard dashboard={dashboard} />
-        <PositionsCard dashboard={dashboard} />
+        <ChainAllocationCard dashboard={dashboard} isLoading={isLoading} />
+        <PositionsCard dashboard={dashboard} isLoading={isLoading} />
       </div>
     </div>
   )
 }
 
-function Metric({ label, value }: { label: string; value: string }) {
+function Metric({
+  isLoading,
+  label,
+  value,
+}: {
+  isLoading?: boolean
+  label: string
+  value: string
+}) {
   return (
     <div className="px-3 first:pl-0 last:pr-0">
       <p className="text-xs uppercase tracking-[0.16em] text-slate-500">{label}</p>
-      <p className="mt-2 font-semibold text-white">{value}</p>
+      {isLoading ? (
+        <Skeleton className="mt-3 h-5 w-20 rounded-md" />
+      ) : (
+        <p className="mt-2 font-semibold text-white">{value}</p>
+      )}
     </div>
   )
 }
 
-function ChainAllocationCard({ dashboard }: { dashboard: MobilePortfolioViewModel | undefined }) {
+function ChainAllocationCard({
+  dashboard,
+  isLoading,
+}: {
+  dashboard: MobilePortfolioViewModel | undefined
+  isLoading?: boolean
+}) {
   const totalValue = dashboard?.totalValue || 0
   const allocations = dashboard?.chainAllocation || []
 
@@ -85,7 +113,9 @@ function ChainAllocationCard({ dashboard }: { dashboard: MobilePortfolioViewMode
         <h2 className="text-sm font-semibold text-white">Chain allocation</h2>
         <span className="text-xs text-slate-500">{allocations.length} chains</span>
       </div>
-      {allocations.length ? (
+      {isLoading ? (
+        <ChainAllocationSkeleton />
+      ) : allocations.length ? (
         <div className="space-y-3">
           {allocations.slice(0, 4).map(allocation => {
             const percentage = totalValue ? Math.round((allocation.value / totalValue) * 100) : 0
@@ -115,7 +145,13 @@ function ChainAllocationCard({ dashboard }: { dashboard: MobilePortfolioViewMode
   )
 }
 
-function PositionsCard({ dashboard }: { dashboard: MobilePortfolioViewModel | undefined }) {
+function PositionsCard({
+  dashboard,
+  isLoading,
+}: {
+  dashboard: MobilePortfolioViewModel | undefined
+  isLoading?: boolean
+}) {
   const positions = dashboard?.positions || []
 
   return (
@@ -124,7 +160,9 @@ function PositionsCard({ dashboard }: { dashboard: MobilePortfolioViewModel | un
         <h2 className="text-sm font-semibold text-white">Positions</h2>
         <span className="text-xs text-slate-500">{positions.length} pools</span>
       </div>
-      {positions.length ? (
+      {isLoading ? (
+        <PositionsSkeleton />
+      ) : positions.length ? (
         <div className="divide-y divide-white/10 border-y border-white/10">
           {positions.slice(0, 5).map(position => (
             <div
@@ -147,6 +185,49 @@ function PositionsCard({ dashboard }: { dashboard: MobilePortfolioViewModel | un
         </p>
       )}
     </section>
+  )
+}
+
+function ChainAllocationSkeleton() {
+  return (
+    <div className="space-y-4">
+      {Array.from({ length: 4 }).map((_, index) => (
+        <div className="space-y-2" key={index}>
+          <div className="flex items-center justify-between gap-3">
+            <Skeleton className="h-4 w-24 rounded-md" />
+            <Skeleton className="h-4 w-8 rounded-md" />
+          </div>
+          <Skeleton className="h-2 w-full rounded-full" />
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function PositionsSkeleton() {
+  return (
+    <div className="divide-y divide-white/10 border-y border-white/10">
+      {Array.from({ length: 4 }).map((_, index) => (
+        <div className="flex min-h-16 items-center justify-between gap-3 py-3" key={index}>
+          <div className="min-w-0 flex-1 space-y-2">
+            <Skeleton className="h-4 w-36 rounded-md" />
+            <Skeleton className="h-3 w-20 rounded-md" />
+          </div>
+          <Skeleton className="h-4 w-16 rounded-md" />
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function Skeleton({ className }: { className?: string }) {
+  return (
+    <div
+      className={cn(
+        'animate-pulse bg-[linear-gradient(90deg,rgba(255,255,255,0.055),rgba(255,255,255,0.12),rgba(255,255,255,0.055))] bg-[length:220%_100%]',
+        className
+      )}
+    />
   )
 }
 
