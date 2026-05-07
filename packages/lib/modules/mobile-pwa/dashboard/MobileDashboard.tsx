@@ -19,7 +19,10 @@ type MobileDashboardProps = {
 export function MobileDashboard({ account }: MobileDashboardProps) {
   const isOnline = useOnlineStatus()
   const portfolio = useWatchedPortfolio({ address: account.address })
-  const cachedDashboard = useMemo(() => readCachedDashboard(), [])
+  const cachedDashboard = useMemo(
+    () => readCachedDashboard({ account: account.address }),
+    [account.address]
+  )
   const dashboard = portfolio.data || (!isOnline ? cachedDashboard : undefined)
   const isUsingStaleData = !portfolio.data && !isOnline && !!cachedDashboard
   const statusTone = portfolio.status === 'error' && !isUsingStaleData ? 'danger' : 'warning'

@@ -31,18 +31,19 @@ export function useWatchedPortfolio({ address }: UseWatchedPortfolioInput) {
     skip: !isEnabled,
   })
 
-  const poolsData = (data?.pools || []) as unknown as Pool[]
-  const positions = mapMobilePortfolioPositions(poolsData)
-  const portfolio: MobilePortfolioViewModel | undefined = address
-    ? {
-        account: address,
-        chainAllocation: getMobilePortfolioChainAllocation(positions),
-        claimableRewardsValue: null,
-        positions,
-        totalValue: getMobilePortfolioTotalValue(positions),
-        updatedAt: 0,
-      }
-    : undefined
+  const poolsData = data ? ((data.pools || []) as unknown as Pool[]) : undefined
+  const positions = poolsData ? mapMobilePortfolioPositions(poolsData) : undefined
+  const portfolio: MobilePortfolioViewModel | undefined =
+    address && positions
+      ? {
+          account: address,
+          chainAllocation: getMobilePortfolioChainAllocation(positions),
+          claimableRewardsValue: null,
+          positions,
+          totalValue: getMobilePortfolioTotalValue(positions),
+          updatedAt: 0,
+        }
+      : undefined
 
   return {
     data: portfolio,
