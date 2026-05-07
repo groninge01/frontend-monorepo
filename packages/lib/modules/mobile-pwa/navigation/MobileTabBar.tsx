@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { BarChart3, CirclePlus, Settings, Shuffle, WavesLadder } from 'lucide-react'
+import { BarChart3, Plus, Settings, Shuffle, WavesLadder } from 'lucide-react'
 import { useWatchAddress } from '../watchlist/WatchAddressProvider'
 import { cn } from '../ui/cn'
 
@@ -14,7 +14,7 @@ type MobileTabBarProps = {
 const tabs = [
   { href: '/', icon: BarChart3, id: 'dashboard' as const, type: 'link' as const },
   { href: '/swap', icon: Shuffle, id: 'swap' as const, type: 'link' as const },
-  { icon: CirclePlus, id: 'watch' as const, type: 'action' as const },
+  { icon: Plus, id: 'watch' as const, type: 'action' as const },
   { href: '/pools', icon: WavesLadder, id: 'pools' as const, type: 'link' as const },
   { href: '/settings', icon: Settings, id: 'settings' as const, type: 'link' as const },
 ] as const
@@ -55,12 +55,14 @@ export function MobileTabBar({ activeTab }: MobileTabBarProps) {
           return (
             <button
               aria-label="Watch an address"
-              className="flex min-h-14 items-center justify-center rounded-lg text-slate-500 transition hover:text-white"
+              className="flex min-h-14 items-center justify-center rounded-lg transition"
               key={tab.id}
               onClick={() => setOpen(true)}
               type="button"
             >
-              <Icon aria-hidden="true" size={28} strokeWidth={2.2} />
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#7f6ae8] text-white shadow-[0_10px_30px_rgba(127,106,232,0.35)] transition active:scale-95">
+                <Icon aria-hidden="true" size={30} strokeWidth={2.6} />
+              </span>
             </button>
           )
         })}
