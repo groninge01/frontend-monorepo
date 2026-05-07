@@ -1,6 +1,7 @@
 'use client'
 
 import { Camera, X } from 'lucide-react'
+import QrScanner from 'qr-scanner'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Button } from '../ui/button'
 import {
@@ -17,18 +18,6 @@ import { useWatchlist } from '../watchlist/useWatchlist'
 type QrAddressScannerProps = {
   trigger?: React.ReactNode
   onAccountAdded?: () => void
-}
-
-type BarcodeDetectorInstance = {
-  detect: (source: HTMLVideoElement) => Promise<Array<{ rawValue: string }>>
-}
-
-type BarcodeDetectorConstructor = new (options?: { formats?: string[] }) => BarcodeDetectorInstance
-
-declare global {
-  interface Window {
-    BarcodeDetector?: BarcodeDetectorConstructor
-  }
 }
 
 export function QrAddressScanner({ onAccountAdded, trigger }: QrAddressScannerProps) {
@@ -65,8 +54,7 @@ export function QrAddressScanner({ onAccountAdded, trigger }: QrAddressScannerPr
     if (!open) return
 
     let cancelled = false
-    let animationFrameId: number | undefined
-    let stream: MediaStream | undefined
+    let scanner: QrScanner | undefined
 
     async function startScanner() {
       handledPayloadRef.current = false
@@ -76,45 +64,30 @@ export function QrAddressScanner({ onAccountAdded, trigger }: QrAddressScannerPr
         return
       }
 
-      if (!window.BarcodeDetector) {
-        setStatus('QR scanning is unavailable in this browser. Paste the QR payload instead.')
-        return
-      }
-
       try {
-        const detector = new window.BarcodeDetector({ formats: ['qr_code'] })
-        stream = await navigator.mediaDevices.getUserMedia({
-          audio: false,
-          video: { facingMode: { ideal: 'environment' } },
-        })
-
-        if (cancelled) {
-          stopStream(stream)
-          return
-        }
-
         const video = videoRef.current
         if (!video) return
 
-        video.srcObject = stream
-        await video.play()
-
-        async function scanFrame() {
-          const currentVideo = videoRef.current
-          if (cancelled || !currentVideo || handledPayloadRef.current) return
-
-          try {
-            const codes = await detector.detect(currentVideo)
-            const payload = codes[0]?.rawValue
-            if (payload) handlePayload(payload)
-          } catch {
-            setStatus('Could not read a QR code from this frame.')
+        scanner = new QrScanner(
+          video,
+          result => {
+            if (cancelled || handledPayloadRef.current) return
+            handlePayload(result.data)
+          },
+          {
+            highlightScanRegion: false,
+            maxScansPerSecond: 8,
+            onDecodeError: error => {
+              if (error !== QrScanner.NO_QR_CODE_FOUND) {
+                setStatus('Could not read a QR code from this frame.')
+              }
+            },
+            preferredCamera: 'environment',
+            returnDetailedScanResult: true,
           }
+        )
 
-          animationFrameId = window.requestAnimationFrame(scanFrame)
-        }
-
-        animationFrameId = window.requestAnimationFrame(scanFrame)
+        await scanner.start()
       } catch {
         setStatus('Camera permission was not granted. Paste the QR payload instead.')
       }
@@ -124,8 +97,7 @@ export function QrAddressScanner({ onAccountAdded, trigger }: QrAddressScannerPr
 
     return () => {
       cancelled = true
-      if (animationFrameId) window.cancelAnimationFrame(animationFrameId)
-      if (stream) stopStream(stream)
+      scanner?.destroy()
       if (videoRef.current) videoRef.current.srcObject = null
     }
   }, [handlePayload, open])
@@ -176,8 +148,4 @@ export function QrAddressScanner({ onAccountAdded, trigger }: QrAddressScannerPr
       </SheetPortal>
     </Sheet>
   )
-}
-
-function stopStream(stream: MediaStream) {
-  stream.getTracks().forEach(track => track.stop())
 }
