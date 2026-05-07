@@ -180,20 +180,21 @@ function PositionsCard({
       ) : positions.length ? (
         <div className="divide-y divide-[var(--mobile-border-zen)] border-t border-[var(--mobile-border-zen)]">
           {positions.slice(0, 5).map(position => (
-            <div className="flex min-h-16 items-start justify-between gap-3 py-3" key={position.id}>
+            <div
+              className="grid min-h-16 grid-cols-[auto_20%] items-start gap-3 py-3"
+              key={position.id}
+            >
               <div className="min-w-0">
-                <div className="flex items-baseline gap-2">
-                  <p className="truncate text-sm font-semibold text-[var(--mobile-text-primary)]">
-                    {position.name}
-                  </p>
-                  <p className="shrink-0 text-sm font-semibold text-[var(--mobile-text-primary)]">
-                    {formatUsd(position.totalBalanceUsd)}
-                  </p>
-                </div>
+                <p className="truncate text-sm font-semibold text-[var(--mobile-text-primary)]">
+                  {position.name}
+                </p>
                 <p className="mt-1 text-xs text-[var(--mobile-text-muted)]">
                   {formatChain(position.chain)}
                 </p>
               </div>
+              <p className="shrink-0 text-right text-sm font-semibold text-[var(--mobile-text-primary)]">
+                {formatUsd(position.totalBalanceUsd)}
+              </p>
             </div>
           ))}
         </div>
@@ -226,10 +227,10 @@ function PositionsSkeleton() {
   return (
     <div className="divide-y divide-[var(--mobile-border-zen)] border-t border-[var(--mobile-border-zen)]">
       {Array.from({ length: 4 }).map((_, index) => (
-        <div className="flex min-h-16 items-center justify-between gap-3 py-3" key={index}>
-          <div className="min-w-0 flex-1 space-y-2">
-            <Skeleton className="h-4 w-36 rounded-md" />
-            <Skeleton className="h-3 w-20 rounded-md" />
+        <div className="grid min-h-16 grid-cols-[auto_20%] items-start gap-3 py-3" key={index}>
+          <div className="min-w-0 space-y-2">
+            <Skeleton className="h-4 w-28 rounded-md" />
+            <Skeleton className="h-3 w-16 rounded-md" />
           </div>
           <Skeleton className="h-4 w-16 rounded-md" />
         </div>
