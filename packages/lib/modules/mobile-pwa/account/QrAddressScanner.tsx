@@ -1,8 +1,8 @@
 'use client'
 
 import { Camera, X } from 'lucide-react'
-import QrScanner from 'qr-scanner'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { Scanner } from '@yudiel/react-qr-scanner'
+import { useCallback, useRef, useState } from 'react'
 import { Button } from '../ui/button'
 import {
   Sheet,
@@ -24,11 +24,13 @@ export function QrAddressScanner({ onAccountAdded, trigger }: QrAddressScannerPr
   const { addAccount } = useWatchlist()
   const [open, setOpen] = useState(false)
   const [status, setStatus] = useState('Point the camera at an address QR code.')
-  const videoRef = useRef<HTMLVideoElement>(null)
   const handledPayloadRef = useRef(false)
 
-  const handlePayload = useCallback(
-    (payload: string) => {
+  const handleScan = useCallback(
+    (detectedCodes: { rawValue: string }[]) => {
+      if (handledPayloadRef.current || detectedCodes.length === 0) return
+
+      const payload = detectedCodes[0].rawValue
       const result = parseQrAddressPayload(payload)
 
       if (result.type === 'invalid') {
@@ -50,60 +52,16 @@ export function QrAddressScanner({ onAccountAdded, trigger }: QrAddressScannerPr
     [addAccount, onAccountAdded]
   )
 
-  useEffect(() => {
-    if (!open) return
-
-    let cancelled = false
-    let scanner: QrScanner | undefined
-
-    async function startScanner() {
+  const handleOpenChange = useCallback((isOpen: boolean) => {
+    setOpen(isOpen)
+    if (isOpen) {
       handledPayloadRef.current = false
-
-      if (!navigator.mediaDevices?.getUserMedia) {
-        setStatus('Camera access is unavailable in this browser. Paste the QR payload instead.')
-        return
-      }
-
-      try {
-        const video = videoRef.current
-        if (!video) return
-
-        scanner = new QrScanner(
-          video,
-          result => {
-            if (cancelled || handledPayloadRef.current) return
-            handlePayload(result.data)
-          },
-          {
-            highlightScanRegion: false,
-            maxScansPerSecond: 8,
-            onDecodeError: error => {
-              if (error !== QrScanner.NO_QR_CODE_FOUND) {
-                setStatus('Could not read a QR code from this frame.')
-              }
-            },
-            preferredCamera: 'environment',
-            returnDetailedScanResult: true,
-          }
-        )
-
-        await scanner.start()
-      } catch {
-        setStatus('Camera permission was not granted. Paste the QR payload instead.')
-      }
+      setStatus('Point the camera at an address QR code.')
     }
-
-    startScanner()
-
-    return () => {
-      cancelled = true
-      scanner?.destroy()
-      if (videoRef.current) videoRef.current.srcObject = null
-    }
-  }, [handlePayload, open])
+  }, [])
 
   return (
-    <Sheet onOpenChange={setOpen} open={open}>
+    <Sheet onOpenChange={handleOpenChange} open={open}>
       <SheetTrigger asChild>
         {trigger ?? (
           <Button type="button" variant="secondary">
@@ -116,11 +74,23 @@ export function QrAddressScanner({ onAccountAdded, trigger }: QrAddressScannerPr
         <SheetOverlay className="bg-black" />
         <SheetContent className="inset-0 max-h-none max-w-none rounded-none border-0 bg-black p-0">
           <SheetTitle className="sr-only">Scan address</SheetTitle>
-          <video
-            className="absolute inset-0 h-full w-full object-cover"
-            muted
-            playsInline
-            ref={videoRef}
+          <Scanner
+            components={{ finder: false }}
+            constraints={{ facingMode: 'environment' }}
+            onError={() =>
+              setStatus('Camera permission was not granted. Paste the QR payload instead.')
+            }
+            onScan={handleScan}
+            styles={{
+              container: { position: 'absolute', inset: 0 },
+              video: {
+                position: 'absolute',
+                inset: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+              },
+            }}
           />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,transparent_36%,rgba(0,0,0,0.46)_58%,rgba(0,0,0,0.72)_100%)]" />
           <button
