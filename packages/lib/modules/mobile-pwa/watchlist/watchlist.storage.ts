@@ -113,10 +113,19 @@ export function setActiveWatchedAccount(address: Address): WatchedAccount | unde
 export function getActiveWatchedAccount(
   accounts = getWatchedAccounts()
 ): WatchedAccount | undefined {
-  const activeAddress = getActiveAccountAddress()
-  if (!activeAddress) return undefined
+  if (!accounts.length) return undefined
 
-  return accounts.find(account => isSameAddress(account.address, activeAddress))
+  const activeAddress = getActiveAccountAddress()
+  if (!activeAddress) return getLastSelectedAccount(accounts)
+
+  return (
+    accounts.find(account => isSameAddress(account.address, activeAddress)) ||
+    getLastSelectedAccount(accounts)
+  )
+}
+
+function getLastSelectedAccount(accounts: WatchedAccount[]): WatchedAccount | undefined {
+  return [...accounts].sort((a, b) => b.lastSelectedAt - a.lastSelectedAt)[0]
 }
 
 function setWatchedAccounts(accounts: WatchedAccount[]): void {
