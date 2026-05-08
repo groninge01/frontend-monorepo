@@ -2,7 +2,8 @@
 
 import { usePathname, useRouter } from 'next/navigation'
 import { ReactNode, createContext, useContext, useState } from 'react'
-import { AnimatePresence, PanInfo, Variants, motion, useAnimationControls } from 'motion/react'
+import { AnimatePresence, Variants, motion, useAnimationControls } from 'motion/react'
+import { useSwipeable } from 'react-swipeable'
 import { MobileTopBar } from '../navigation/MobileTopBar'
 import { cn } from '../ui/cn'
 
@@ -18,6 +19,7 @@ type MobileShellProps = {
 }
 
 const dragNavigationThreshold = 72
+const maxDragOffset = 120
 const slideOffset = 32
 const slideVariants: Variants = {
   enter: (direction: SwipeDirection) => ({
@@ -91,27 +93,63 @@ export function MobileShell({
   const dragControls = useAnimationControls()
   const canDragLeft = !!swipeNavigation?.nextHref
   const canDragRight = !!swipeNavigation?.previousHref
-  const dragConstraints = {
-    left: canDragLeft ? -120 : 0,
-    right: canDragRight ? 120 : 0,
+
+  const swipeHandlers = useSwipeable({
+    delta: 4,
+    onSwiped: event => {
+      if (event.absX < dragNavigationThreshold) {
+        dragControls.start({ opacity: 1, x: 0 })
+        return
+      }
+
+      if (event.deltaX < 0 && swipeNavigation?.nextHref) {
+        setDirection('next')
+        dragControls.start({ opacity: 0.72, x: -180 })
+        router.push(swipeNavigation.nextHref)
+        return
+      }
+
+      if (event.deltaX > 0 && swipeNavigation?.previousHref) {
+        setDirection('previous')
+        dragControls.start({ opacity: 0.72, x: 180 })
+        router.push(swipeNavigation.previousHref)
+        return
+      }
+
+      dragControls.start({ opacity: 1, x: 0 })
+    },
+    onSwiping: event => {
+      if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) return
+
+      const nextX = Math.max(-maxDragOffset, Math.min(maxDragOffset, event.deltaX))
+
+      if (nextX < 0 && !canDragLeft) return
+      if (nextX > 0 && !canDragRight) return
+
+      dragControls.set({ opacity: 1, x: nextX })
+    },
+    preventScrollOnSwipe: true,
+    trackMouse: false,
+    trackTouch: true,
+  })
+
+  function handlePointerCancel() {
+    dragControls.start({ opacity: 1, x: 0 })
   }
 
-  function handleDragEnd(_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) {
-    if (info.offset.x <= -dragNavigationThreshold && swipeNavigation?.nextHref) {
+  function navigateOnKeyboard(direction: SwipeDirection) {
+    if (direction === 'next' && swipeNavigation?.nextHref) {
       setDirection('next')
       dragControls.start({ opacity: 0.72, x: -180 })
       router.push(swipeNavigation.nextHref)
       return
     }
 
-    if (info.offset.x >= dragNavigationThreshold && swipeNavigation?.previousHref) {
+    if (direction === 'previous' && swipeNavigation?.previousHref) {
       setDirection('previous')
       dragControls.start({ opacity: 0.72, x: 180 })
       router.push(swipeNavigation.previousHref)
-      return
     }
-
-    dragControls.start({ opacity: 1, x: 0 })
   }
 
   return (
@@ -136,12 +174,17 @@ export function MobileShell({
               </div>
             ) : null}
             <motion.div
+              {...swipeHandlers}
               animate={dragControls}
-              className="relative z-10 min-h-full bg-[var(--mobile-bg-level-1)] px-4 py-4"
-              drag={canDragLeft || canDragRight ? 'x' : false}
-              dragConstraints={dragConstraints}
-              dragElastic={0.18}
-              onDragEnd={handleDragEnd}
+              className="relative z-10 min-h-full select-none bg-[var(--mobile-bg-level-1)] px-4 py-4"
+              onKeyDown={event => {
+                if (event.key === 'ArrowLeft') navigateOnKeyboard('next')
+                if (event.key === 'ArrowRight') navigateOnKeyboard('previous')
+              }}
+              onPointerCancel={handlePointerCancel}
+              role="group"
+              style={{ touchAction: 'pan-y', WebkitUserSelect: 'none' }}
+              tabIndex={0}
               transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
             >
               {children}

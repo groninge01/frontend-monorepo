@@ -26,7 +26,7 @@ export function ComingSoonScreen({
 
 export function PoolsPreview() {
   return (
-    <section className="flex min-h-[70dvh] flex-col justify-between">
+    <section className="space-y-5">
       <div className="space-y-4">
         <StatusChip>Coming later</StatusChip>
         <div className="space-y-2">
@@ -38,11 +38,19 @@ export function PoolsPreview() {
         </div>
       </div>
 
-      <section className="rounded-3xl bg-[var(--mobile-bg-level-2)] p-4">
-        <p className="text-sm text-[var(--mobile-text-primary)]">
-          Dashboard and Settings are available in this MVP. Transaction flows stay out of scope.
-        </p>
-      </section>
+      <div className="space-y-3 pt-2">
+        {Array.from({ length: 4 }).map((_, index) => (
+          <div className="rounded-2xl bg-[var(--mobile-bg-level-2)] p-4" key={index}>
+            <div className="h-4 w-2/3 rounded-md bg-[var(--mobile-gradient-skeleton)] bg-[length:220%_100%]" />
+            <div className="mt-3 h-3 w-1/3 rounded-md bg-[var(--mobile-gradient-skeleton)] bg-[length:220%_100%]" />
+            <div className="mt-4 grid grid-cols-3 gap-2">
+              <div className="h-8 rounded-xl bg-[var(--mobile-bg-level-0)]" />
+              <div className="h-8 rounded-xl bg-[var(--mobile-bg-level-0)]" />
+              <div className="h-8 rounded-xl bg-[var(--mobile-bg-level-0)]" />
+            </div>
+          </div>
+        ))}
+      </div>
     </section>
   )
 }
