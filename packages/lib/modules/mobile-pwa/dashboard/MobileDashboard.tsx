@@ -119,7 +119,7 @@ function PositionsCard({
         <PositionsSkeleton />
       ) : positions.length ? (
         <div className="divide-y divide-[var(--mobile-border-zen)] border-t border-[var(--mobile-border-zen)]">
-          {positions.slice(0, 5).map(position => (
+          {positions.map(position => (
             <div
               className="grid min-h-16 grid-cols-[auto_20%] items-start gap-3 py-3"
               key={position.id}
