@@ -48,19 +48,30 @@ export function MobileDashboard({ account }: MobileDashboardProps) {
 
   return (
     <div className="space-y-10">
-      <section className="space-y-5 pt-2">
-        <div>
-          <p className="text-xs uppercase tracking-[0.18em] text-[var(--mobile-text-muted)]">
-            Portfolio value
-          </p>
-          {isLoading ? (
-            <Skeleton className="mt-4 h-12 w-56 rounded-xl" />
-          ) : (
-            <p className="mt-3 text-5xl font-semibold tracking-tight">
-              {formatUsd(dashboard?.totalValue || 0)}
-            </p>
-          )}
-        </div>
+      <section className="space-y-3 pt-2">
+        <section className="rounded-2xl bg-[var(--mobile-bg-level-2)] p-4">
+          <SummaryMetric
+            isLoading={isLoading}
+            label="Portfolio value"
+            skeletonClassName="h-12 w-56 rounded-xl"
+            value={formatUsd(dashboard?.totalValue || 0)}
+            valueClassName="text-5xl tracking-tight"
+          />
+
+          <div className="mt-5 grid grid-cols-2 divide-x divide-[var(--mobile-border-zen)] border-t border-[var(--mobile-border-zen)] pt-4">
+            <SummaryMetric
+              isLoading={isLoading}
+              label="Claimable"
+              value={formatClaimable(dashboard)}
+            />
+            <SummaryMetric
+              className="pl-4"
+              isLoading={isLoading}
+              label="Positions"
+              value={`${dashboard?.positions.length || 0} pools`}
+            />
+          </div>
+        </section>
 
         <div>
           {isUsingStaleData ? (
@@ -78,15 +89,6 @@ export function MobileDashboard({ account }: MobileDashboardProps) {
             </div>
           ) : null}
         </div>
-
-        <div className="grid grid-cols-2 divide-x divide-[var(--mobile-border-zen)] border-y border-[var(--mobile-border-zen)] py-3 text-sm">
-          <Metric isLoading={isLoading} label="Claimable" value={formatClaimable(dashboard)} />
-          <Metric
-            isLoading={isLoading}
-            label="Positions"
-            value={`${dashboard?.positions.length || 0} pools`}
-          />
-        </div>
       </section>
 
       <div className="space-y-10">
@@ -96,22 +98,30 @@ export function MobileDashboard({ account }: MobileDashboardProps) {
   )
 }
 
-function Metric({
+function SummaryMetric({
+  className,
   isLoading,
   label,
+  skeletonClassName = 'h-6 w-24 rounded-md',
   value,
+  valueClassName = 'text-2xl',
 }: {
+  className?: string
   isLoading?: boolean
   label: string
+  skeletonClassName?: string
   value: string
+  valueClassName?: string
 }) {
   return (
-    <div className="px-3 first:pl-0 last:pr-0">
-      <p className="text-xs uppercase tracking-[0.16em] text-[var(--mobile-text-muted)]">{label}</p>
+    <div className={className}>
+      <p className="text-xs uppercase tracking-[0.18em] text-[var(--mobile-text-muted)]">{label}</p>
       {isLoading ? (
-        <Skeleton className="mt-3 h-5 w-20 rounded-md" />
+        <Skeleton className={cn('mt-3', skeletonClassName)} />
       ) : (
-        <p className="mt-2 font-semibold text-[var(--mobile-text-primary)]">{value}</p>
+        <p className={cn('mt-3 font-semibold text-[var(--mobile-text-primary)]', valueClassName)}>
+          {value}
+        </p>
       )}
     </div>
   )
