@@ -35,6 +35,9 @@ export function MobileTabBar({ activeTab }: MobileTabBarProps) {
           const active = isActive(tab)
 
           if (tab.type === 'link') {
+            const isForward = tab.id === 'pools'
+            const transitionTypes = isForward ? ['nav-forward'] : ['nav-back']
+
             return (
               <Link
                 aria-current={active ? 'page' : undefined}
@@ -44,6 +47,7 @@ export function MobileTabBar({ activeTab }: MobileTabBarProps) {
                 )}
                 href={tab.href}
                 key={tab.id}
+                transitionTypes={transitionTypes}
               >
                 <Icon aria-hidden="true" size={28} strokeWidth={2.2} />
               </Link>

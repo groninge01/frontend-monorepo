@@ -6,6 +6,9 @@ const appDir = path.dirname(fileURLToPath(import.meta.url))
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: ['localhost', '127.0.0.1', '192.168.*.*', '10.*.*.*', '172.*.*.*'],
+  experimental: {
+    viewTransition: true,
+  },
   reactCompiler: true,
   transpilePackages: ['@repo/lib'],
   turbopack: {

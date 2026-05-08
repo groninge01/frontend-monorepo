@@ -10,7 +10,10 @@ export function MobileTopBar() {
   const { activeAccount } = useWatchlist()
 
   return (
-    <header className="sticky top-0 z-30 bg-transparent px-4 pb-3 pt-[calc(env(safe-area-inset-top)+12px)]">
+    <header
+      className="sticky top-0 z-30 bg-transparent px-4 pb-3 pt-[calc(env(safe-area-inset-top)+12px)]"
+      style={{ viewTransitionName: 'site-header' }}
+    >
       <div className="grid min-h-10 grid-cols-[1fr_auto_1fr] items-center gap-3">
         <div />
         {activeAccount ? <AccountSwitcherSheet activeAccount={activeAccount} /> : <div />}
