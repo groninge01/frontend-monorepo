@@ -1,6 +1,7 @@
 'use client'
 
 import { Check, ChevronDown, Trash2 } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
 import { useState } from 'react'
 import { Address } from 'viem'
 import { abbreviateAddress, isSameAddress } from '../../../shared/utils/addresses'
@@ -37,7 +38,20 @@ export function AccountSwitcherSheet({ activeAccount }: AccountSwitcherSheetProp
           className="flex min-h-10 min-w-32 items-center justify-center gap-1.5 rounded-full px-2 text-sm font-medium text-[var(--mobile-text-primary)] transition hover:text-white"
           type="button"
         >
-          <span className="max-w-28 truncate">{abbreviateAddress(activeAccount.address)}</span>
+          <span className="relative grid min-w-24 place-items-center overflow-hidden">
+            <AnimatePresence initial={false} mode="popLayout">
+              <motion.span
+                animate={{ opacity: 1, y: 0 }}
+                className="max-w-28 truncate"
+                exit={{ opacity: 0, y: -8 }}
+                initial={{ opacity: 0, y: 8 }}
+                key={activeAccount.address}
+                transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+              >
+                {abbreviateAddress(activeAccount.address)}
+              </motion.span>
+            </AnimatePresence>
+          </span>
           <ChevronDown aria-hidden className="h-4 w-4 text-[var(--mobile-text-muted)]" />
         </button>
       </SheetTrigger>
