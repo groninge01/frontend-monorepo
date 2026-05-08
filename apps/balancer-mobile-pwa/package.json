@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "pnpm --filter @repo/lib graphql:gen && next build",
-    "dev": "concurrently \"pnpm --filter @repo/lib graphql:gen --watch\" \"next dev\"",
+    "dev": "concurrently \"pnpm --filter @repo/lib graphql:gen --watch\" \"next dev -p 3002\"",
     "lint": "eslint . --max-warnings 0 --cache",
     "lint:fix": "eslint . --fix --max-warnings 0 --cache",
     "start": "next start -p 3002",
