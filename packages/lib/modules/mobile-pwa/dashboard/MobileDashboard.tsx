@@ -83,8 +83,8 @@ export function MobileDashboard({ account }: MobileDashboardProps) {
           ) : null}
         </div>
       </section>
-
       <PositionsCard className="relative -mt-12" dashboard={dashboard} isLoading={isLoading} />
+      <section className="rounded-3xl bg-[var(--mobile-bg-level-2)] p-4">place holder</section>
     </div>
   )
 }
