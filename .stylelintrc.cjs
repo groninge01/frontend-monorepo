@@ -28,7 +28,7 @@ module.exports = {
     'at-rule-no-unknown': [
       true,
       {
-        ignoreAtRules: ['starting-style', 'source', 'tailwind', 'apply', 'layer', 'utility', 'variant'],
+        ignoreAtRules: ['starting-style'],
       },
     ],
   },
