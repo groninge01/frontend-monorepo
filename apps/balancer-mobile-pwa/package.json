@@ -12,7 +12,9 @@
     "start": "next start -p 3002",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",
-    "typecheck": "tsc --project tsconfig.json --noEmit --incremental"
+    "typecheck": "tsc --project tsconfig.json --noEmit --incremental",
+    "stylelint": "stylelint '**/*.css'",
+    "stylelint:fix": "stylelint '**/*.css' --fix"
   },
   "dependencies": {
     "@repo/lib": "workspace:*",

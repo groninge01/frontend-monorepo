@@ -1,32 +1,32 @@
-@import "tailwindcss";
+@import url("tailwindcss");
 
 @source "../../../packages/lib/modules/mobile-pwa/**/*.{ts,tsx}";
 
 :root {
-  --mobile-bg-base: hsla(260, 15%, 9%, 1);
+  --mobile-bg-base: hsl(260deg 15% 9% / 100%);
   --mobile-bg-level-0: #181b23;
   --mobile-bg-level-1: #1e212b;
   --mobile-bg-level-2: #242833;
   --mobile-bg-level-3: #2a2f3c;
-  --mobile-bg-overlay: rgba(0, 0, 0, 0.6);
+  --mobile-bg-overlay: rgb(0 0 0 / 60%);
   --mobile-border-base: #3d4252;
   --mobile-border-divider: #141720;
-  --mobile-border-zen: rgba(61, 66, 82, 0.55);
+  --mobile-border-zen: rgb(61 66 82 / 55%);
   --mobile-purple: #7f6ae8;
   --mobile-purple-highlight: #9f95f0;
   --mobile-green: #00d395;
   --mobile-text-primary: #ede0d0;
   --mobile-text-secondary: #c4b8a6;
-  --mobile-text-muted: rgba(196, 184, 166, 0.65);
+  --mobile-text-muted: rgb(196 184 166 / 65%);
   --mobile-text-error: #f48975;
   --mobile-text-warning: #fdba74;
   --mobile-gradient-primary: linear-gradient(
     135deg,
-    hsla(244, 78%, 82%, 1) 0%,
-    hsla(266, 37%, 85%, 1) 40%,
-    hsla(0, 36%, 84%, 1) 60%,
-    rgb(239, 148, 84) 100%,
-    rgb(255, 138, 54) 140%
+    hsl(244deg 78% 82% / 100%) 0%,
+    hsl(266deg 37% 85% / 100%) 40%,
+    hsl(0deg 36% 84% / 100%) 60%,
+    rgb(239 148 84) 100%,
+    rgb(255 138 54) 140%
   );
   --mobile-gradient-allocation: linear-gradient(
     90deg,
@@ -35,10 +35,11 @@
   );
   --mobile-gradient-skeleton: linear-gradient(
     90deg,
-    rgba(237, 224, 208, 0.06),
-    rgba(237, 224, 208, 0.14),
-    rgba(237, 224, 208, 0.06)
+    rgb(237 224 208 / 6%),
+    rgb(237 224 208 / 14%),
+    rgb(237 224 208 / 6%)
   );
+
   color-scheme: dark;
   background: var(--mobile-bg-base);
 }
@@ -46,12 +47,15 @@
 /* View Transitions */
 ::view-transition-old(.nav-forward) {
   --slide-offset: -60px;
+
   animation:
     150ms ease-in both fade reverse,
     400ms ease-in-out both slide reverse;
 }
+
 ::view-transition-new(.nav-forward) {
   --slide-offset: 60px;
+
   animation:
     210ms ease-out 150ms both fade,
     400ms ease-in-out both slide;
@@ -59,12 +63,15 @@
 
 ::view-transition-old(.nav-back) {
   --slide-offset: 60px;
+
   animation:
     150ms ease-in both fade reverse,
     400ms ease-in-out both slide reverse;
 }
+
 ::view-transition-new(.nav-back) {
   --slide-offset: -60px;
+
   animation:
     210ms ease-out 150ms both fade,
     400ms ease-in-out both slide;
@@ -74,6 +81,7 @@
   from {
     translate: var(--slide-offset);
   }
+
   to {
     translate: 0;
   }
@@ -83,9 +91,11 @@
   animation: none;
   z-index: 100;
 }
+
 ::view-transition-old(site-header) {
   display: none;
 }
+
 ::view-transition-new(site-header) {
   animation: none;
 }
