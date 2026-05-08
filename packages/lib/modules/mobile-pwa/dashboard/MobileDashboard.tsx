@@ -47,18 +47,15 @@ export function MobileDashboard({ account }: MobileDashboardProps) {
   }, [isOnline, refetchPortfolio])
 
   return (
-    <div className="space-y-6 pb-6">
-      <section className="relative -mx-4 -mt-4 bg-[linear-gradient(165deg,#12161f_0%,#1a1040_35%,#2d1b69_55%,#7f6ae8_78%,#e88a5a_100%)] px-4 pb-18 pt-12 text-center shadow-[0_28px_80px_rgba(0,0,0,0.32)]">
-        <div className="pointer-events-none absolute -right-10 -top-16 h-44 w-44 rounded-full bg-[rgba(127,106,232,0.18)] blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-12 left-6 h-36 w-36 rounded-full bg-[rgba(239,148,84,0.12)] blur-3xl" />
-        <div className="pointer-events-none absolute right-8 top-4 h-24 w-24 rounded-full border border-white/[0.06] bg-white/[0.04] blur-sm" />
+    <div className="space-y-6 pb-2">
+      <section className="relative -mx-4 -mt-20 bg-[linear-gradient(165deg,#12161f_0%,#1a1040_35%,#2d1b69_55%,#7f6ae8_78%,#e88a5a_100%)] px-4 pb-18 pt-8 text-center">
         <img
           alt=""
           aria-hidden
           className="pointer-events-none absolute left-1/2 top-1/2 h-64 w-64 -translate-x-9/10 -translate-y-1/2 opacity-[0.18] blur-[4px]"
           src="/balancer-icon.svg"
         />
-        <div className="relative flex flex-col items-center gap-3">
+        <div className="relative mt-16 flex flex-col items-center gap-3">
           <p className="text-sm font-semibold text-white/88">Portfolio value</p>
           {isLoading ? (
             <Skeleton className="mx-auto mt-4 h-12 w-56 rounded-xl bg-white/20" />
