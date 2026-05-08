@@ -1,11 +1,11 @@
 'use client'
 
 import Link from 'next/link'
-import { BarChart3, Plus, Settings, Shuffle, WavesLadder } from 'lucide-react'
+import { BarChart3, Plus, WavesLadder } from 'lucide-react'
 import { useWatchAddress } from '../watchlist/WatchAddressProvider'
 import { cn } from '../ui/cn'
 
-export type MobileTab = 'dashboard' | 'swap' | 'watch' | 'pools' | 'settings'
+export type MobileTab = 'dashboard' | 'watch' | 'pools' | 'settings'
 
 type MobileTabBarProps = {
   activeTab: MobileTab
@@ -13,10 +13,8 @@ type MobileTabBarProps = {
 
 const tabs = [
   { href: '/', icon: BarChart3, id: 'dashboard' as const, type: 'link' as const },
-  { href: '/swap', icon: Shuffle, id: 'swap' as const, type: 'link' as const },
   { icon: Plus, id: 'watch' as const, type: 'action' as const },
   { href: '/pools', icon: WavesLadder, id: 'pools' as const, type: 'link' as const },
-  { href: '/settings', icon: Settings, id: 'settings' as const, type: 'link' as const },
 ] as const
 
 type TabItem = (typeof tabs)[number]
@@ -31,7 +29,7 @@ export function MobileTabBar({ activeTab }: MobileTabBarProps) {
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-[430px] border-t border-[var(--mobile-border-zen)] bg-[var(--mobile-bg-level-1)]/95 px-3 pb-[calc(env(safe-area-inset-bottom)+8px)] pt-2 backdrop-blur-xl">
-      <div className="grid grid-cols-5 gap-1">
+      <div className="mx-auto grid max-w-64 grid-cols-3 gap-4">
         {tabs.map(tab => {
           const Icon = tab.icon
           const active = isActive(tab)
