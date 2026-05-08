@@ -24,10 +24,27 @@ export function MobileDashboard({ account }: MobileDashboardProps) {
   const dashboard = portfolio.data || (!isOnline ? cachedDashboard : undefined)
   const isUsingStaleData = !portfolio.data && !isOnline && !!cachedDashboard
   const isLoading = portfolio.status === 'loading' && !dashboard
+  const refetchPortfolio = portfolio.refetch
 
   useEffect(() => {
     if (portfolio.data) writeCachedDashboard(portfolio.data, Date.now())
   }, [portfolio.data])
+
+  useEffect(() => {
+    function refreshVisibleDashboard() {
+      if (!isOnline || document.visibilityState !== 'visible') return
+
+      refetchPortfolio()
+    }
+
+    document.addEventListener('visibilitychange', refreshVisibleDashboard)
+    window.addEventListener('focus', refreshVisibleDashboard)
+
+    return () => {
+      document.removeEventListener('visibilitychange', refreshVisibleDashboard)
+      window.removeEventListener('focus', refreshVisibleDashboard)
+    }
+  }, [isOnline, refetchPortfolio])
 
   return (
     <div className="space-y-10">
