@@ -12,7 +12,10 @@ export function MobileHome() {
   const { setOpen } = useWatchAddress()
 
   return (
-    <MobileShell bottomNavigation={<MobileTabBar activeTab="dashboard" />}>
+    <MobileShell
+      bottomNavigation={<MobileTabBar activeTab="dashboard" />}
+      swipeNavigation={{ nextHref: '/pools' }}
+    >
       <section>
         {activeAccount ? (
           <MobileDashboard account={activeAccount} />

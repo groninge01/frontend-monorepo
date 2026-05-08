@@ -4,12 +4,16 @@ import { StatusChip } from '../ui/status-chip'
 
 type ComingSoonScreenProps = {
   activeTab: MobileTab
+  previousHref?: string
   title: string
 }
 
-export function ComingSoonScreen({ activeTab, title }: ComingSoonScreenProps) {
+export function ComingSoonScreen({ activeTab, previousHref, title }: ComingSoonScreenProps) {
   return (
-    <MobileShell bottomNavigation={<MobileTabBar activeTab={activeTab} />}>
+    <MobileShell
+      bottomNavigation={<MobileTabBar activeTab={activeTab} />}
+      swipeNavigation={{ previousHref }}
+    >
       <section className="flex min-h-[70dvh] flex-col justify-between">
         <div className="space-y-4">
           <StatusChip>Coming later</StatusChip>
