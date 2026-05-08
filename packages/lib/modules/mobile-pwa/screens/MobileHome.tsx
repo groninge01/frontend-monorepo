@@ -3,7 +3,6 @@
 import { MobileDashboard } from '../dashboard/MobileDashboard'
 import { MobileShell } from '../layout/MobileShell'
 import { MobileTabBar } from '../navigation/MobileTabBar'
-import { PoolsPreview } from './ComingSoonScreen'
 import { AddressInputSheet } from '../watchlist/AddressInputSheet'
 import { useWatchAddress } from '../watchlist/WatchAddressProvider'
 import { useWatchlist } from '../watchlist/useWatchlist'
@@ -13,22 +12,12 @@ export function MobileHome() {
   const { setOpen } = useWatchAddress()
 
   return (
-    <MobileShell
-      bottomNavigation={<MobileTabBar activeTab="dashboard" />}
-      nextPreview={<PoolsPreview />}
-      swipeNavigation={{ nextHref: '/pools' }}
-    >
+    <MobileShell bottomNavigation={<MobileTabBar activeTab="dashboard" />}>
       <MobileHomeContent activeAccount={activeAccount} />
 
       <AddressInputSheet onAccountAdded={() => setOpen(false)} />
     </MobileShell>
   )
-}
-
-export function MobileHomePreview() {
-  const { activeAccount } = useWatchlist()
-
-  return <MobileHomeContent activeAccount={activeAccount} />
 }
 
 function MobileHomeContent({

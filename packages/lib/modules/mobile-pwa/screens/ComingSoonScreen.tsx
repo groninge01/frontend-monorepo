@@ -4,21 +4,11 @@ import { StatusChip } from '../ui/status-chip'
 
 type ComingSoonScreenProps = {
   activeTab: MobileTab
-  previousPreview?: React.ReactNode
-  previousHref?: string
 }
 
-export function ComingSoonScreen({
-  activeTab,
-  previousHref,
-  previousPreview,
-}: ComingSoonScreenProps) {
+export function ComingSoonScreen({ activeTab }: ComingSoonScreenProps) {
   return (
-    <MobileShell
-      bottomNavigation={<MobileTabBar activeTab={activeTab} />}
-      previousPreview={previousPreview}
-      swipeNavigation={{ previousHref }}
-    >
+    <MobileShell bottomNavigation={<MobileTabBar activeTab={activeTab} />}>
       <PoolsPreview />
     </MobileShell>
   )

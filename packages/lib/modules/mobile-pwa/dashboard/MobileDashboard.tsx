@@ -47,7 +47,7 @@ export function MobileDashboard({ account }: MobileDashboardProps) {
   }, [isOnline, refetchPortfolio])
 
   return (
-    <div className="space-y-10">
+    <div className="flex h-full min-h-0 flex-col gap-6">
       <section className="space-y-3 pt-2">
         <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_20%_0%,rgba(127,106,232,0.36),transparent_34%),linear-gradient(145deg,rgba(36,40,51,0.96),rgba(24,27,35,0.98)_58%,rgba(20,23,32,1))] p-4 shadow-[0_22px_70px_rgba(0,0,0,0.32),0_0_45px_rgba(127,106,232,0.16)]">
           <div className="pointer-events-none absolute -right-12 -top-16 h-44 w-44 rounded-full bg-[var(--mobile-purple)]/25 blur-3xl" />
@@ -96,7 +96,7 @@ export function MobileDashboard({ account }: MobileDashboardProps) {
         </div>
       </section>
 
-      <div className="space-y-10">
+      <div className="min-h-0 flex-1">
         <PositionsCard dashboard={dashboard} isLoading={isLoading} />
       </div>
     </div>
@@ -142,7 +142,7 @@ function PositionsCard({
   const positions = dashboard?.positions || []
 
   return (
-    <section className="space-y-4">
+    <section className="flex h-full min-h-0 flex-col space-y-4">
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-sm font-semibold text-[var(--mobile-text-primary)]">Positions</h2>
         <span className="text-xs text-[var(--mobile-text-muted)]">{positions.length} pools</span>
@@ -150,25 +150,27 @@ function PositionsCard({
       {isLoading ? (
         <PositionsSkeleton />
       ) : positions.length ? (
-        <div className="divide-y divide-[var(--mobile-border-zen)] border-t border-[var(--mobile-border-zen)]">
-          {positions.map(position => (
-            <div
-              className="grid min-h-16 grid-cols-[auto_20%] items-start gap-3 py-3"
-              key={position.id}
-            >
-              <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-[var(--mobile-text-primary)]">
-                  {position.name}
-                </p>
-                <p className="mt-1 text-xs text-[var(--mobile-text-muted)]">
-                  {formatChain(position.chain)}
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain border-t border-[var(--mobile-border-zen)] pb-6">
+          <div className="divide-y divide-[var(--mobile-border-zen)]">
+            {positions.map(position => (
+              <div
+                className="grid min-h-16 grid-cols-[auto_20%] items-start gap-3 py-3"
+                key={position.id}
+              >
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-[var(--mobile-text-primary)]">
+                    {position.name}
+                  </p>
+                  <p className="mt-1 text-xs text-[var(--mobile-text-muted)]">
+                    {formatChain(position.chain)}
+                  </p>
+                </div>
+                <p className="shrink-0 text-right text-sm font-semibold text-[var(--mobile-text-primary)]">
+                  {formatUsd(position.totalBalanceUsd)}
                 </p>
               </div>
-              <p className="shrink-0 text-right text-sm font-semibold text-[var(--mobile-text-primary)]">
-                {formatUsd(position.totalBalanceUsd)}
-              </p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       ) : (
         <p className="border-t border-[var(--mobile-border-zen)] pt-3 text-sm text-[var(--mobile-text-secondary)]">

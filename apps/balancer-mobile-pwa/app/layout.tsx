@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { PropsWithChildren } from "react";
 import { satoshiFont } from "@repo/lib/assets/fonts/satoshi/satoshi";
-import { MobileSwipeNavigationProvider } from "@repo/lib/modules/mobile-pwa/layout/MobileShell";
 import { MobilePwaProviders } from "@repo/lib/modules/mobile-pwa/providers/MobilePwaProviders";
 import "@mobile/app/globals.css";
 
@@ -27,9 +26,7 @@ export default async function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang="en">
       <body className={satoshiFont.className}>
-        <MobilePwaProviders>
-          <MobileSwipeNavigationProvider>{children}</MobileSwipeNavigationProvider>
-        </MobilePwaProviders>
+        <MobilePwaProviders>{children}</MobilePwaProviders>
       </body>
     </html>
   );
