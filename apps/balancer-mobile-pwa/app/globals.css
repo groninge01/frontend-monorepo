@@ -45,45 +45,64 @@
 }
 
 /* View Transitions */
-::view-transition-old(.nav-forward) {
-  --slide-offset: -60px;
+::view-transition-old(.nav-forward),
+::view-transition-old(.nav-back),
+::view-transition-new(.nav-forward),
+::view-transition-new(.nav-back) {
+  animation-duration: 360ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  animation-fill-mode: both;
+}
 
-  animation:
-    150ms ease-in both fade reverse,
-    400ms ease-in-out both slide reverse;
+::view-transition-old(.nav-forward) {
+  --slide-offset: -28px;
+  animation-name: page-exit;
 }
 
 ::view-transition-new(.nav-forward) {
-  --slide-offset: 60px;
-
-  animation:
-    210ms ease-out 150ms both fade,
-    400ms ease-in-out both slide;
+  --slide-offset: 36px;
+  animation-name: page-enter;
 }
 
 ::view-transition-old(.nav-back) {
-  --slide-offset: 60px;
-
-  animation:
-    150ms ease-in both fade reverse,
-    400ms ease-in-out both slide reverse;
+  --slide-offset: 28px;
+  animation-name: page-exit;
 }
 
 ::view-transition-new(.nav-back) {
-  --slide-offset: -60px;
-
-  animation:
-    210ms ease-out 150ms both fade,
-    400ms ease-in-out both slide;
+  --slide-offset: -36px;
+  animation-name: page-enter;
 }
 
-@keyframes slide {
+@keyframes page-enter {
   from {
-    translate: var(--slide-offset);
+    opacity: 0;
+    translate: var(--slide-offset) 0;
+    scale: 0.985;
+    filter: blur(2px);
   }
 
   to {
-    translate: 0;
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+    filter: blur(0);
+  }
+}
+
+@keyframes page-exit {
+  from {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+    filter: blur(0);
+  }
+
+  to {
+    opacity: 0;
+    translate: var(--slide-offset) 0;
+    scale: 0.995;
+    filter: blur(1px);
   }
 }
 
