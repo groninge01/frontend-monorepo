@@ -49,16 +49,21 @@ export function MobileDashboard({ account }: MobileDashboardProps) {
   return (
     <div className="space-y-10">
       <section className="space-y-3 pt-2">
-        <section className="rounded-2xl bg-[var(--mobile-bg-level-2)] p-4">
-          <SummaryMetric
-            isLoading={isLoading}
-            label="Portfolio value"
-            skeletonClassName="h-12 w-56 rounded-xl"
-            value={formatUsd(dashboard?.totalValue || 0)}
-            valueClassName="text-5xl tracking-tight"
-          />
+        <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_20%_0%,rgba(127,106,232,0.36),transparent_34%),linear-gradient(145deg,rgba(36,40,51,0.96),rgba(24,27,35,0.98)_58%,rgba(20,23,32,1))] p-4 shadow-[0_22px_70px_rgba(0,0,0,0.32),0_0_45px_rgba(127,106,232,0.16)]">
+          <div className="pointer-events-none absolute -right-12 -top-16 h-44 w-44 rounded-full bg-[var(--mobile-purple)]/25 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-20 left-8 h-36 w-36 rounded-full bg-[var(--mobile-green)]/10 blur-3xl" />
 
-          <div className="mt-5 grid grid-cols-2 divide-x divide-[var(--mobile-border-zen)] border-t border-[var(--mobile-border-zen)] pt-4">
+          <div className="relative">
+            <SummaryMetric
+              isLoading={isLoading}
+              label="Portfolio value"
+              skeletonClassName="h-12 w-56 rounded-xl"
+              value={formatUsd(dashboard?.totalValue || 0)}
+              valueClassName="text-5xl tracking-tight"
+            />
+          </div>
+
+          <div className="relative mt-5 grid grid-cols-2 divide-x divide-white/10 border-t border-white/10 pt-4">
             <SummaryMetric
               isLoading={isLoading}
               label="Claimable"
