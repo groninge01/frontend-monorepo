@@ -2,21 +2,22 @@
 
 import { usePathname, useRouter } from 'next/navigation'
 import { ReactNode, createContext, useContext, useState } from 'react'
-import { AnimatePresence, Variants, motion } from 'motion/react'
-import { useSwipeable } from 'react-swipeable'
+import { AnimatePresence, PanInfo, Variants, motion, useAnimationControls } from 'motion/react'
 import { MobileTopBar } from '../navigation/MobileTopBar'
 import { cn } from '../ui/cn'
 
 type MobileShellProps = {
   children: ReactNode
   bottomNavigation?: ReactNode
+  nextPreview?: ReactNode
+  previousPreview?: ReactNode
   swipeNavigation?: {
     nextHref?: string
     previousHref?: string
   }
 }
 
-const minSwipeDistance = 60
+const dragNavigationThreshold = 72
 const slideOffset = 32
 const slideVariants: Variants = {
   enter: (direction: SwipeDirection) => ({
@@ -42,11 +43,25 @@ type SwipeNavigationContextValue = {
 const SwipeNavigationContext = createContext<SwipeNavigationContextValue | null>(null)
 
 export function MobileSwipeNavigationProvider({ children }: { children: ReactNode }) {
+  const pathname = usePathname()
   const [direction, setDirection] = useState<SwipeDirection>('next')
 
   return (
     <SwipeNavigationContext.Provider value={{ direction, setDirection }}>
-      {children}
+      <AnimatePresence custom={direction} initial={false} mode="popLayout">
+        <motion.div
+          animate="center"
+          className="min-h-dvh"
+          custom={direction}
+          exit="exit"
+          initial="enter"
+          key={pathname}
+          transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+          variants={slideVariants}
+        >
+          {children}
+        </motion.div>
+      </AnimatePresence>
     </SwipeNavigationContext.Provider>
   )
 }
@@ -64,27 +79,40 @@ function useSwipeNavigationDirection() {
   return context
 }
 
-export function MobileShell({ bottomNavigation, children, swipeNavigation }: MobileShellProps) {
-  const pathname = usePathname()
+export function MobileShell({
+  bottomNavigation,
+  children,
+  nextPreview,
+  previousPreview,
+  swipeNavigation,
+}: MobileShellProps) {
   const router = useRouter()
-  const { direction, setDirection } = useSwipeNavigationDirection()
-  const swipeHandlers = useSwipeable({
-    delta: minSwipeDistance,
-    onSwipedLeft: () => {
-      if (!swipeNavigation?.nextHref) return
+  const { setDirection } = useSwipeNavigationDirection()
+  const dragControls = useAnimationControls()
+  const canDragLeft = !!swipeNavigation?.nextHref
+  const canDragRight = !!swipeNavigation?.previousHref
+  const dragConstraints = {
+    left: canDragLeft ? -120 : 0,
+    right: canDragRight ? 120 : 0,
+  }
 
+  function handleDragEnd(_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) {
+    if (info.offset.x <= -dragNavigationThreshold && swipeNavigation?.nextHref) {
       setDirection('next')
+      dragControls.start({ opacity: 0.72, x: -180 })
       router.push(swipeNavigation.nextHref)
-    },
-    onSwipedRight: () => {
-      if (!swipeNavigation?.previousHref) return
+      return
+    }
 
+    if (info.offset.x >= dragNavigationThreshold && swipeNavigation?.previousHref) {
       setDirection('previous')
+      dragControls.start({ opacity: 0.72, x: 180 })
       router.push(swipeNavigation.previousHref)
-    },
-    preventScrollOnSwipe: false,
-    trackMouse: false,
-  })
+      return
+    }
+
+    dragControls.start({ opacity: 1, x: 0 })
+  }
 
   return (
     <div className="min-h-dvh bg-[var(--mobile-bg-base)] text-[var(--mobile-text-primary)]">
@@ -96,21 +124,28 @@ export function MobileShell({ bottomNavigation, children, swipeNavigation }: Mob
           )}
         >
           <MobileTopBar />
-          <main className="flex-1 px-4 py-4" {...swipeHandlers}>
-            <AnimatePresence custom={direction} initial={false} mode="popLayout">
-              <motion.div
-                animate="center"
-                className="h-full"
-                custom={direction}
-                exit="exit"
-                initial="enter"
-                key={pathname}
-                transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                variants={slideVariants}
-              >
-                {children}
-              </motion.div>
-            </AnimatePresence>
+          <main className="relative flex-1 overflow-hidden">
+            {nextPreview ? (
+              <div className="pointer-events-none absolute inset-0 translate-x-[78%] px-4 py-4 opacity-80">
+                {nextPreview}
+              </div>
+            ) : null}
+            {previousPreview ? (
+              <div className="pointer-events-none absolute inset-0 -translate-x-[78%] px-4 py-4 opacity-80">
+                {previousPreview}
+              </div>
+            ) : null}
+            <motion.div
+              animate={dragControls}
+              className="relative z-10 min-h-full bg-[var(--mobile-bg-level-1)] px-4 py-4"
+              drag={canDragLeft || canDragRight ? 'x' : false}
+              dragConstraints={dragConstraints}
+              dragElastic={0.18}
+              onDragEnd={handleDragEnd}
+              transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {children}
+            </motion.div>
           </main>
           {bottomNavigation}
         </div>
