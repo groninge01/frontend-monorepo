@@ -2,7 +2,6 @@
 
 import { RefreshCcw } from 'lucide-react'
 import { useEffect, useMemo } from 'react'
-import { chainGradient } from '@repo/lib/shared/services/chakra/chain-gradient'
 import { MobilePortfolioViewModel } from '../portfolio/mobilePortfolio.types'
 import { useWatchedPortfolio } from '../portfolio/useWatchedPortfolio'
 import { readCachedDashboard, writeCachedDashboard } from '../pwa/dashboard-cache'
@@ -74,7 +73,6 @@ export function MobileDashboard({ account }: MobileDashboardProps) {
       </section>
 
       <div className="space-y-10">
-        <ChainAllocationCard dashboard={dashboard} isLoading={isLoading} />
         <PositionsCard dashboard={dashboard} isLoading={isLoading} />
       </div>
     </div>
@@ -99,64 +97,6 @@ function Metric({
         <p className="mt-2 font-semibold text-[var(--mobile-text-primary)]">{value}</p>
       )}
     </div>
-  )
-}
-
-function ChainAllocationCard({
-  dashboard,
-  isLoading,
-}: {
-  dashboard: MobilePortfolioViewModel | undefined
-  isLoading?: boolean
-}) {
-  const totalValue = dashboard?.totalValue || 0
-  const allocations = dashboard?.chainAllocation || []
-
-  return (
-    <section className="space-y-4">
-      <div className="flex items-center justify-between gap-3">
-        <h2 className="text-sm font-semibold text-[var(--mobile-text-primary)]">
-          Chain allocation
-        </h2>
-        <span className="text-xs text-[var(--mobile-text-muted)]">{allocations.length} chains</span>
-      </div>
-      {isLoading ? (
-        <ChainAllocationSkeleton />
-      ) : allocations.length ? (
-        <div className="space-y-3">
-          {allocations.slice(0, 4).map(allocation => {
-            const percentage = totalValue ? Math.round((allocation.value / totalValue) * 100) : 0
-            const chainGrad = chainGradient[allocation.chain]
-
-            return (
-              <div className="space-y-2" key={allocation.chain}>
-                <div className="flex items-center justify-between gap-3 text-sm">
-                  <span className="font-medium text-[var(--mobile-text-primary)]">
-                    {formatChain(allocation.chain)}
-                  </span>
-                  <span className="text-[var(--mobile-text-secondary)]">{percentage}%</span>
-                </div>
-                <div className="h-2 overflow-hidden rounded-full bg-[var(--mobile-bg-level-0)]">
-                  <div
-                    className="h-full rounded-full"
-                    style={{
-                      background: chainGrad
-                        ? `linear-gradient(90deg, ${chainGrad.from}, ${chainGrad.to})`
-                        : 'var(--mobile-gradient-allocation)',
-                      width: `${Math.max(percentage, 4)}%`,
-                    }}
-                  />
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      ) : (
-        <p className="border-t border-[var(--mobile-border-zen)] pt-3 text-sm text-[var(--mobile-text-secondary)]">
-          No active chain balances.
-        </p>
-      )}
-    </section>
   )
 }
 
@@ -204,22 +144,6 @@ function PositionsCard({
         </p>
       )}
     </section>
-  )
-}
-
-function ChainAllocationSkeleton() {
-  return (
-    <div className="space-y-4">
-      {Array.from({ length: 4 }).map((_, index) => (
-        <div className="space-y-2" key={index}>
-          <div className="flex items-center justify-between gap-3">
-            <Skeleton className="h-4 w-24 rounded-md" />
-            <Skeleton className="h-4 w-8 rounded-md" />
-          </div>
-          <Skeleton className="h-2 w-full rounded-full" />
-        </div>
-      ))}
-    </div>
   )
 }
 
