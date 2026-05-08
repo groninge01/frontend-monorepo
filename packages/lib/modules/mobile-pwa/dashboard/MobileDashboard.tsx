@@ -1,6 +1,6 @@
 'use client'
 
-import { RefreshCcw } from 'lucide-react'
+import { ChevronRight, RefreshCcw } from 'lucide-react'
 import { useEffect, useMemo } from 'react'
 import { MobilePortfolioViewModel } from '../portfolio/mobilePortfolio.types'
 import { useWatchedPortfolio } from '../portfolio/useWatchedPortfolio'
@@ -47,36 +47,27 @@ export function MobileDashboard({ account }: MobileDashboardProps) {
   }, [isOnline, refetchPortfolio])
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-6">
-      <section className="space-y-3 pt-2">
-        <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_20%_0%,rgba(127,106,232,0.36),transparent_34%),linear-gradient(145deg,rgba(36,40,51,0.96),rgba(24,27,35,0.98)_58%,rgba(20,23,32,1))] p-4 shadow-[0_22px_70px_rgba(0,0,0,0.32),0_0_45px_rgba(127,106,232,0.16)]">
-          <div className="pointer-events-none absolute -right-12 -top-16 h-44 w-44 rounded-full bg-[var(--mobile-purple)]/25 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-20 left-8 h-36 w-36 rounded-full bg-[var(--mobile-green)]/10 blur-3xl" />
-
-          <div className="relative">
-            <SummaryMetric
-              isLoading={isLoading}
-              label="Portfolio value"
-              skeletonClassName="h-12 w-56 rounded-xl"
-              value={formatUsd(dashboard?.totalValue || 0)}
-              valueClassName="text-5xl tracking-tight"
-            />
-          </div>
-
-          <div className="relative mt-5 grid grid-cols-2 divide-x divide-white/10 border-t border-white/10 pt-4">
-            <SummaryMetric
-              isLoading={isLoading}
-              label="Claimable"
-              value={formatClaimable(dashboard)}
-            />
-            <SummaryMetric
-              className="pl-4"
-              isLoading={isLoading}
-              label="Positions"
-              value={`${dashboard?.positions.length || 0} pools`}
-            />
-          </div>
-        </section>
+    <div className="space-y-6 pb-6">
+      <section className="relative -mx-4 -mt-4 bg-[linear-gradient(165deg,#12161f_0%,#1a1040_35%,#2d1b69_55%,#7f6ae8_78%,#e88a5a_100%)] px-4 pb-18 pt-12 text-center shadow-[0_28px_80px_rgba(0,0,0,0.32)]">
+        <div className="pointer-events-none absolute -right-10 -top-16 h-44 w-44 rounded-full bg-[rgba(127,106,232,0.18)] blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-12 left-6 h-36 w-36 rounded-full bg-[rgba(239,148,84,0.12)] blur-3xl" />
+        <div className="pointer-events-none absolute right-8 top-4 h-24 w-24 rounded-full border border-white/[0.06] bg-white/[0.04] blur-sm" />
+        <img
+          alt=""
+          aria-hidden
+          className="pointer-events-none absolute left-1/2 top-1/2 h-64 w-64 -translate-x-9/10 -translate-y-1/2 opacity-[0.18] blur-[4px]"
+          src="/balancer-icon.svg"
+        />
+        <div className="relative flex flex-col items-center gap-3">
+          <p className="text-sm font-semibold text-white/88">Portfolio value</p>
+          {isLoading ? (
+            <Skeleton className="mx-auto mt-4 h-12 w-56 rounded-xl bg-white/20" />
+          ) : (
+            <p className="mt-3 text-6xl font-black tracking-[-0.08em] text-white">
+              {formatUsd(dashboard?.totalValue || 0)}
+            </p>
+          )}
+        </div>
 
         <div>
           {isUsingStaleData ? (
@@ -96,84 +87,60 @@ export function MobileDashboard({ account }: MobileDashboardProps) {
         </div>
       </section>
 
-      <div className="min-h-0 flex-1">
-        <PositionsCard dashboard={dashboard} isLoading={isLoading} />
-      </div>
-    </div>
-  )
-}
-
-function SummaryMetric({
-  className,
-  isLoading,
-  label,
-  skeletonClassName = 'h-6 w-24 rounded-md',
-  value,
-  valueClassName = 'text-2xl',
-}: {
-  className?: string
-  isLoading?: boolean
-  label: string
-  skeletonClassName?: string
-  value: string
-  valueClassName?: string
-}) {
-  return (
-    <div className={className}>
-      <p className="text-xs uppercase tracking-[0.18em] text-[var(--mobile-text-muted)]">{label}</p>
-      {isLoading ? (
-        <Skeleton className={cn('mt-3', skeletonClassName)} />
-      ) : (
-        <p className={cn('mt-3 font-semibold text-[var(--mobile-text-primary)]', valueClassName)}>
-          {value}
-        </p>
-      )}
+      <PositionsCard className="relative -mt-12" dashboard={dashboard} isLoading={isLoading} />
     </div>
   )
 }
 
 function PositionsCard({
+  className,
   dashboard,
   isLoading,
 }: {
+  className?: string
   dashboard: MobilePortfolioViewModel | undefined
   isLoading?: boolean
 }) {
   const positions = dashboard?.positions || []
+  const previewPositions = positions.slice(0, 5)
 
   return (
-    <section className="flex h-full min-h-0 flex-col space-y-4">
+    <section className={cn('rounded-3xl bg-[var(--mobile-bg-level-2)] p-4', className)}>
       <div className="flex items-center justify-between gap-3">
-        <h2 className="text-sm font-semibold text-[var(--mobile-text-primary)]">Positions</h2>
-        <span className="text-xs text-[var(--mobile-text-muted)]">{positions.length} pools</span>
+        <h2 className="text-base font-semibold text-[var(--mobile-text-primary)]">Positions</h2>
+        <button
+          aria-label="View all positions"
+          className="-mr-2 flex h-9 w-9 items-center justify-center rounded-full text-[var(--mobile-text-muted)] transition hover:text-[var(--mobile-text-primary)]"
+          type="button"
+        >
+          <ChevronRight aria-hidden className="h-5 w-5" />
+        </button>
       </div>
       {isLoading ? (
         <PositionsSkeleton />
       ) : positions.length ? (
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain border-t border-[var(--mobile-border-zen)] pb-6">
-          <div className="divide-y divide-[var(--mobile-border-zen)]">
-            {positions.map(position => (
-              <div
-                className="grid min-h-16 grid-cols-[auto_20%] items-start gap-3 py-3"
-                key={position.id}
-              >
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-[var(--mobile-text-primary)]">
-                    {position.name}
-                  </p>
-                  <p className="mt-1 text-xs text-[var(--mobile-text-muted)]">
-                    {formatChain(position.chain)}
-                  </p>
-                </div>
-                <p className="shrink-0 text-right text-sm font-semibold text-[var(--mobile-text-primary)]">
-                  {formatUsd(position.totalBalanceUsd)}
+        <div className="mt-3 space-y-2">
+          {previewPositions.map(position => (
+            <div
+              className="grid min-h-14 grid-cols-[auto_24%] items-start gap-3 rounded-2xl py-2"
+              key={position.id}
+            >
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-[var(--mobile-text-primary)]">
+                  {position.name}
+                </p>
+                <p className="mt-1 text-xs text-[var(--mobile-text-muted)]">
+                  {formatChain(position.chain)}
                 </p>
               </div>
-            ))}
-          </div>
+              <p className="shrink-0 text-right text-sm font-semibold text-[var(--mobile-text-primary)]">
+                {formatUsd(position.totalBalanceUsd)}
+              </p>
+            </div>
+          ))}
         </div>
       ) : (
-        <p className="border-t border-[var(--mobile-border-zen)] pt-3 text-sm text-[var(--mobile-text-secondary)]">
+        <p className="mt-3 text-sm text-[var(--mobile-text-secondary)]">
           No pool positions found for this address.
         </p>
       )}
@@ -183,9 +150,9 @@ function PositionsCard({
 
 function PositionsSkeleton() {
   return (
-    <div className="divide-y divide-[var(--mobile-border-zen)] border-t border-[var(--mobile-border-zen)]">
+    <div className="mt-3 space-y-2">
       {Array.from({ length: 4 }).map((_, index) => (
-        <div className="grid min-h-16 grid-cols-[auto_20%] items-start gap-3 py-3" key={index}>
+        <div className="grid min-h-14 grid-cols-[auto_24%] items-start gap-3 py-2" key={index}>
           <div className="min-w-0 space-y-2">
             <Skeleton className="h-4 w-28 rounded-md" />
             <Skeleton className="h-3 w-16 rounded-md" />
@@ -206,11 +173,6 @@ function Skeleton({ className }: { className?: string }) {
       )}
     />
   )
-}
-
-function formatClaimable(dashboard: MobilePortfolioViewModel | undefined) {
-  if (!dashboard || dashboard.claimableRewardsValue === null) return 'Unavailable'
-  return formatUsd(dashboard.claimableRewardsValue)
 }
 
 function formatChain(chain: string) {
