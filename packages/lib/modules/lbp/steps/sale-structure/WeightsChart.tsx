@@ -106,8 +106,8 @@ export function WeightsChart({
       axisLine: { show: false },
       splitLine: { show: false },
       axisTick: { show: false },
-      min: startDateTime.getTime(),
-      max: endDateTime.getTime(),
+      min: startDateTime?.getTime() ?? 0,
+      max: endDateTime?.getTime() ?? 0,
       axisLabel: {
         formatter: (value: number) => formatDateAxisLabel(value, startDateTime, endDateTime),
         interval: 'auto', // ECharts automatically prevents overlap
@@ -302,8 +302,8 @@ function interpolateData(
   endDateTime: Date,
   cutTime?: Date
 ) {
-  const startTimestamp = bn(startDateTime.getTime())
-  const endTimestamp = bn(endDateTime.getTime())
+  const startTimestamp = bn(startDateTime?.getTime() ?? 0)
+  const endTimestamp = bn(endDateTime?.getTime() ?? 0)
   const slope = bn(endWeight).minus(startWeight).div(endTimestamp.minus(startTimestamp))
   const interpolate = (timestamp: BigNumber) =>
     bn(startWeight)
