@@ -45,8 +45,8 @@ export function PoolActionsPriceImpactDetails({
 
   const priceImpactLabel = isNumber(priceImpact) ? fNum('priceImpact', priceImpact) : '-'
 
-  const priceImpactUsd = bn(priceImpact || 0).times(totalUSDValue)
-  const maxSlippageUsd = bn(slippage).div(100).times(totalUSDValue)
+   const priceImpactUsd = bn(priceImpact ?? '0').times(totalUSDValue)
+   const maxSlippageUsd = bn(slippage ?? '0').div(100).times(totalUSDValue)
 
   const currentShareOfPool = calcUserShareOfPool(pool)
 

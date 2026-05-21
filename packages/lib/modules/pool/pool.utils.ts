@@ -139,24 +139,24 @@ export function getTotalApr(aprItems: GqlPoolAprItem[]): [BigNumber, BigNumber] 
     .filter(item => TOTAL_APR_TYPES.includes(item.type))
     .forEach(item => {
       if (item.type === GqlPoolAprItemType.StakingBoost) {
-        maxTotal = bn(item.apr).plus(maxTotal)
+        maxTotal = bn(item.apr ?? '0').plus(maxTotal)
         return
       }
 
       if (item.type === GqlPoolAprItemType.VebalEmissions) {
         // We don't add this to maxTotal as is already included on the staking boost
-        minTotal = bn(item.apr).plus(minTotal)
+        minTotal = bn(item.apr ?? '0').plus(minTotal)
         return // Deprecated, should be 0 once emissions stop
       }
 
       if (item.type === GqlPoolAprItemType.MabeetsEmissions) {
-        minTotal = bn(item.apr).plus(minTotal)
-        maxTotal = bn(item.apr).plus(maxTotal)
+        minTotal = bn(item.apr ?? '0').plus(minTotal)
+        maxTotal = bn(item.apr ?? '0').plus(maxTotal)
         return
       }
 
-      minTotal = bn(item.apr).plus(minTotal)
-      maxTotal = bn(item.apr).plus(maxTotal)
+       minTotal = bn(item.apr ?? '0').plus(minTotal)
+       maxTotal = bn(item.apr ?? '0').plus(maxTotal)
     })
 
   return [minTotal, maxTotal]
