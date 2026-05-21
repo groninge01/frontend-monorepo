@@ -106,8 +106,8 @@ export function WeightsChart({
       axisLine: { show: false },
       splitLine: { show: false },
       axisTick: { show: false },
-      min: startDateTime.getTime(),
-      max: endDateTime.getTime(),
+      min: startDateTime?.getTime() ?? 0,
+      max: endDateTime?.getTime() ?? 0,
       axisLabel: {
         formatter: (value: number) => formatDateAxisLabel(value, startDateTime, endDateTime),
         interval: 'auto', // ECharts automatically prevents overlap
