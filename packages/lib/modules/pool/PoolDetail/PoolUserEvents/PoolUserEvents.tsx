@@ -177,11 +177,26 @@ export default function PoolUserEvents({
   const stakedPercentage = useMemo(() => {
     const totalBalance = getUserTotalBalance(pool)
     const stakedBalance = calcTotalStakedBalance(pool)
-    const ratio = bn(stakedBalance).div(totalBalance)
+
+    // Guard bn(stakedBalance) call and check for NaN flow before .div()
+    const stakedBalanceBN = bn(stakedBalance)
+    if (stakedBalanceBN.isNaN()) {
+      return fNum('percentage', 0)
+    }
 
     if (stakedBalance === '0') {
       return fNum('percentage', 0)
-    } else if (ratio.isGreaterThan(0.99999) && ratio.isLessThan(1.00001)) {
+    }
+
+    const totalBalanceBN = bn(totalBalance)
+    // Also guard against invalid totalBalance to prevent division issues
+    if (totalBalanceBN.isNaN() || totalBalanceBN.eq(0)) {
+      return fNum('percentage', 0)
+    }
+
+    const ratio = stakedBalanceBN.div(totalBalanceBN)
+
+    if (ratio.isGreaterThan(0.99999) && ratio.isLessThan(1.00001)) {
       // to avoid very small rounding errors
       return fNum('percentage', 1)
     } else {

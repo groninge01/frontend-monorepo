@@ -302,8 +302,8 @@ function interpolateData(
   endDateTime: Date,
   cutTime?: Date
 ) {
-  const startTimestamp = bn(startDateTime.getTime())
-  const endTimestamp = bn(endDateTime.getTime())
+  const startTimestamp = bn(startDateTime?.getTime() ?? 0)
+  const endTimestamp = bn(endDateTime?.getTime() ?? 0)
   const slope = bn(endWeight).minus(startWeight).div(endTimestamp.minus(startTimestamp))
   const interpolate = (timestamp: BigNumber) =>
     bn(startWeight)
