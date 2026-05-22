@@ -130,10 +130,11 @@ const calculatedWeight = denominator.isZero() || denominator.isNaN()
               {isVirtualPairedToken && (
                 <VStack pl="8" w="full">
                   <TokenRow
-                    actualWeight={bn(actualWeight)
-                      .times(pool.reserveTokenVirtualBalance)
-                      .div(bn(poolToken.balance).plus(pool.reserveTokenVirtualBalance).isZero() || bn(poolToken.balance).plus(pool.reserveTokenVirtualBalance).isNaN() ? bn('0') : bn(poolToken.balance).plus(pool.reserveTokenVirtualBalance))
-                      .toString()}
+actualWeight={(() => {
+  const denom = bn(poolToken.balance).plus(pool.reserveTokenVirtualBalance);
+  const weight = denom.isZero() || denom.isNaN() ? bn('0') : bn(actualWeight).times(pool.reserveTokenVirtualBalance).div(denom);
+  return weight.toString();
+})()}
                     address={poolToken.address as Address}
                     chain={chain}
                     iconSize={28}
@@ -144,10 +145,11 @@ const calculatedWeight = denominator.isZero() || denominator.isNaN()
                     value={pool.reserveTokenVirtualBalance}
                   />
                   <TokenRow
-                    actualWeight={bn(actualWeight)
-                      .times(poolToken.balance)
-                      .div(bn(poolToken.balance).plus(pool.reserveTokenVirtualBalance).isZero() || bn(poolToken.balance).plus(pool.reserveTokenVirtualBalance).isNaN() ? bn('0') : bn(poolToken.balance).plus(pool.reserveTokenVirtualBalance))
-                      .toString()}
+actualWeight={(() => {
+  const denom = bn(poolToken.balance).plus(pool.reserveTokenVirtualBalance);
+  const weight = denom.isZero() || denom.isNaN() ? bn('0') : bn(actualWeight).times(poolToken.balance).div(denom);
+  return weight.toString();
+})()}
                     address={poolToken.address as Address}
                     chain={chain}
                     iconSize={28}
