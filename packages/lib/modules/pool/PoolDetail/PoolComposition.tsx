@@ -103,9 +103,7 @@ function CardContent({ totalLiquidity, poolTokens, chain, pool }: CardContentPro
               {poolToken.hasNestedPool && poolToken.nestedPool && (
                 <VStack pl="8" w="full">
                   {getNestedPoolTokens(poolToken).map(nestedPoolToken => {
-                    const calculatedWeight = bn(nestedPoolToken.balanceUSD).div(
-                      bn(poolToken.balanceUSD)
-                    )
+                    const calculatedWeight = bn(nestedPoolToken.balanceUSD).div(bn(poolToken.balanceUSD)) || bn('0')
                     return (
                       <TokenRow
                         actualWeight={bn(actualWeight).times(calculatedWeight).toString()}
@@ -131,7 +129,7 @@ function CardContent({ totalLiquidity, poolTokens, chain, pool }: CardContentPro
                   <TokenRow
                     actualWeight={bn(actualWeight)
                       .times(pool.reserveTokenVirtualBalance)
-                      .div(bn(poolToken.balance).plus(pool.reserveTokenVirtualBalance))
+                      .div(bn(poolToken.balance).plus(pool.reserveTokenVirtualBalance)) || bn('0')
                       .toString()}
                     address={poolToken.address as Address}
                     chain={chain}
@@ -145,7 +143,7 @@ function CardContent({ totalLiquidity, poolTokens, chain, pool }: CardContentPro
                   <TokenRow
                     actualWeight={bn(actualWeight)
                       .times(poolToken.balance)
-                      .div(bn(poolToken.balance).plus(pool.reserveTokenVirtualBalance))
+                      .div(bn(poolToken.balance).plus(pool.reserveTokenVirtualBalance)) || bn('0')
                       .toString()}
                     address={poolToken.address as Address}
                     chain={chain}

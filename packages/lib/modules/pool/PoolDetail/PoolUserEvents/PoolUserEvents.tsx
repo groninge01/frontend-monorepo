@@ -177,6 +177,9 @@ export default function PoolUserEvents({
   const stakedPercentage = useMemo(() => {
     const totalBalance = getUserTotalBalance(pool)
     const stakedBalance = calcTotalStakedBalance(pool)
+    if (totalBalance === '0' || stakedBalance === '0') {
+      return fNum('percentage', 0)
+    }
     const ratio = bn(stakedBalance).div(totalBalance)
 
     if (stakedBalance === '0') {
