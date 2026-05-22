@@ -14,7 +14,11 @@ export function interpolatePrices(
 ): LbpPrice[] {
   const startTimestamp = bn(startDate.getTime())
   const endTimestamp = bn(endDate.getTime())
-  const slope = bn(endWeight).minus(startWeight).div(endTimestamp.minus(startTimestamp))
+  const denominator = endTimestamp.minus(startTimestamp)
+  const slope =
+    denominator.isZero() || denominator.isNaN()
+      ? bn(0)
+      : bn(endWeight).minus(startWeight).div(denominator)
   const interpolateLaunchTokenWeight = (timestamp: BigNumber) =>
     bn(startWeight)
       .plus(slope.times(timestamp.minus(startTimestamp)))
