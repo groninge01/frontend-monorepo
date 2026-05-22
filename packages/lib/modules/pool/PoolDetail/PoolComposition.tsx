@@ -103,9 +103,10 @@ function CardContent({ totalLiquidity, poolTokens, chain, pool }: CardContentPro
               {poolToken.hasNestedPool && poolToken.nestedPool && (
                 <VStack pl="8" w="full">
                   {getNestedPoolTokens(poolToken).map(nestedPoolToken => {
-                    const calculatedWeight = bn(nestedPoolToken.balanceUSD).div(
-                      bn(poolToken.balanceUSD)
-                    )
+const denominator = bn(poolToken.balanceUSD);
+const calculatedWeight = denominator.isZero() || denominator.isNaN()
+  ? bn('0')
+  : bn(nestedPoolToken.balanceUSD).div(denominator)
                     return (
                       <TokenRow
                         actualWeight={bn(actualWeight).times(calculatedWeight).toString()}
@@ -129,10 +130,11 @@ function CardContent({ totalLiquidity, poolTokens, chain, pool }: CardContentPro
               {isVirtualPairedToken && (
                 <VStack pl="8" w="full">
                   <TokenRow
-                    actualWeight={bn(actualWeight)
-                      .times(pool.reserveTokenVirtualBalance)
-                      .div(bn(poolToken.balance).plus(pool.reserveTokenVirtualBalance))
-                      .toString()}
+actualWeight={(() => {
+  const denom = bn(poolToken.balance).plus(pool.reserveTokenVirtualBalance);
+  const weight = denom.isZero() || denom.isNaN() ? bn('0') : bn(actualWeight).times(pool.reserveTokenVirtualBalance).div(denom);
+  return weight.toString();
+})()}
                     address={poolToken.address as Address}
                     chain={chain}
                     iconSize={28}
@@ -143,10 +145,11 @@ function CardContent({ totalLiquidity, poolTokens, chain, pool }: CardContentPro
                     value={pool.reserveTokenVirtualBalance}
                   />
                   <TokenRow
-                    actualWeight={bn(actualWeight)
-                      .times(poolToken.balance)
-                      .div(bn(poolToken.balance).plus(pool.reserveTokenVirtualBalance))
-                      .toString()}
+actualWeight={(() => {
+  const denom = bn(poolToken.balance).plus(pool.reserveTokenVirtualBalance);
+  const weight = denom.isZero() || denom.isNaN() ? bn('0') : bn(actualWeight).times(poolToken.balance).div(denom);
+  return weight.toString();
+})()}
                     address={poolToken.address as Address}
                     chain={chain}
                     iconSize={28}
